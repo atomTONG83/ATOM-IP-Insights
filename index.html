@@ -3,20 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atom TONG | 中欧知识产权战略专家</title>
+    <title>Atom TONG | ATOM IP 中欧知识产权专家</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        
+        /* 动态 Hero 背景 */
+        .hero-section {
+            position: relative;
+            background: #0f172a;
+            overflow: hidden;
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #1e1b4b, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 几何网格纹理 */
+        .hero-pattern {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            pointer-events: none;
+        }
+
+        /* 微光球体 */
+        .glow-sphere {
+            position: absolute;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: 1;
+        }
+        .sphere-1 { top: -100px; right: -100px; animation: float 10s infinite alternate; }
+        .sphere-2 { bottom: -150px; left: -100px; animation: float 15s infinite alternate-reverse; }
+
+        @keyframes float {
+            from { transform: translate(0, 0); }
+            to { transform: translate(30px, 50px); }
+        }
+
         .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
-        .radar-pulse { position: relative; }
-        .radar-pulse::after { content: ''; position: absolute; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; top: 0; right: -2px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body class="text-slate-800">
@@ -27,7 +67,6 @@
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center space-x-2">
                     <span class="text-2xl font-bold tracking-tight text-slate-900">Atom <span class="text-blue-600">TONG</span></span>
-                    <span class="hidden sm:block text-sm text-slate-400 border-l pl-2 border-slate-200 font-medium tracking-widest uppercase italic">IP Attorney</span>
                 </div>
                 <div class="hidden md:flex space-x-8 text-sm font-medium">
                     <a href="index.html" class="text-blue-600 border-b-2 border-blue-600 pb-1">首页</a>
@@ -41,14 +80,26 @@
         </div>
     </nav>
 
-    <!-- Hero -->
-    <header class="hero-gradient text-white py-20 px-4">
-        <div class="max-w-7xl mx-auto text-center">
-            <h1 class="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight">ATOM IP 中欧知识产权专家</h1>
-            <p class="text-lg text-slate-400 max-w-2xl mx-auto mb-10 font-light leading-relaxed">
-                依托 Plasseraud IP 全球网络，为中国科技企业提供欧洲专利、UPC 诉讼及全球知产战略的一站式法律支持。
+    <!-- Hero Section Upgrade -->
+    <header class="hero-section text-white py-28 px-4 relative">
+        <div class="hero-pattern"></div>
+        <div class="glow-sphere sphere-1"></div>
+        <div class="glow-sphere sphere-2"></div>
+        
+        <div class="max-w-7xl mx-auto text-center relative z-10">
+            <div class="inline-block px-4 py-1.5 mb-6 bg-blue-500/10 border border-blue-500/20 rounded-full backdrop-blur-sm">
+                <span class="text-xs font-bold tracking-widest text-blue-400 uppercase">Expertise & Strategic Insight</span>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight">
+                ATOM IP <br class="md:hidden"> <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">中欧知识产权专家</span>
+            </h1>
+            <p class="text-xl text-slate-300 max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+                凭借 Plasseraud IP 的全球视野与资深法律背景，为中国科技创新在欧洲的落地与维权提供坚实后盾。
             </p>
-            <a href="#europe" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold transition-all">开启知产雷达</a>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#europe" class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-full font-bold transition-all shadow-xl shadow-blue-500/20">开启知产雷达</a>
+                <a href="mailto:topboy_1983@hotmail.com" class="bg-white/5 hover:bg-white/10 text-white border border-white/20 px-10 py-4 rounded-full font-bold backdrop-blur-sm transition-all">战略咨询</a>
+            </div>
         </div>
     </header>
 
@@ -59,15 +110,14 @@
                 <h2 class="text-3xl font-bold text-slate-900 mb-2" id="europe">欧洲 IP 核心板块</h2>
                 <div class="h-1 w-20 bg-blue-600"></div>
             </div>
-            <span class="text-xs font-bold text-red-500 flex items-center radar-pulse">
-                <i class="fa-solid fa-tower-broadcast mr-2"></i> 实时情报雷达
+            <span class="text-xs font-bold text-red-500 flex items-center">
+                <i class="fa-solid fa-tower-broadcast mr-2 animate-pulse"></i> 实时情报雷达
             </span>
         </div>
 
         <!-- 12-Column Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20">
-            
-            <!-- Left: Deep Insight Cards (8/12) -->
+            <!-- Left: Cards (8/12) -->
             <div class="lg:col-span-8 space-y-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm card-hover">
@@ -75,7 +125,7 @@
                             <i class="fa-solid fa-gavel text-emerald-600 text-xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-3 text-slate-900">统一专利法院 (UPC)</h3>
-                        <p class="text-slate-500 text-sm leading-relaxed mb-6">实时追踪 UPC 早期判例，解析“足够确定性”原则对初步禁令的影响。</p>
+                        <p class="text-slate-500 text-sm leading-relaxed mb-6">解析 UPC 早期判例与跨境禁令，为中企出海构建防侵权预警体系。</p>
                         <a href="upc_insights.html" class="bg-slate-50 text-emerald-600 px-6 py-2 rounded-full text-xs font-bold hover:bg-emerald-600 hover:text-white transition-all">进入研判中心</a>
                     </div>
                     <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm card-hover">
@@ -83,137 +133,229 @@
                             <i class="fa-solid fa-file-signature text-blue-600 text-xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-3 text-slate-900">欧洲专利 (EPO)</h3>
-                        <p class="text-slate-500 text-sm leading-relaxed mb-6">G 1/25 说明书适应性修改：中企在欧获权与维权的关键博弈点。</p>
+                        <p class="text-slate-500 text-sm leading-relaxed mb-6">EPO 审查实务与获权策略，协助中国高科技产业深挖欧洲专利价值。</p>
                         <a href="#" class="bg-slate-50 text-blue-600 px-6 py-2 rounded-full text-xs font-bold hover:bg-blue-600 hover:text-white transition-all">查看专题</a>
                     </div>
                 </div>
-                
-                <div class="bg-slate-900 text-white rounded-3xl p-8 relative overflow-hidden">
+                <div class="bg-slate-900 text-white rounded-3xl p-10 relative overflow-hidden group">
                     <div class="relative z-10">
                         <h3 class="text-2xl font-bold mb-4">中国 IP 实务与跨境布局</h3>
-                        <p class="text-slate-400 text-sm mb-6 max-w-lg">从 CNIPA 审查指南更新到中欧跨境技术许可协议中的知产陷阱排查。</p>
-                        <button class="border border-slate-700 px-6 py-2 rounded-full text-xs font-bold hover:bg-white hover:text-slate-900 transition-all">进入版块</button>
+                        <p class="text-slate-400 text-sm mb-6 max-w-lg">深耕中欧跨境法律实务，解决技术许可、尽职调查中的核心法律风险。</p>
+                        <button class="border border-slate-700 px-8 py-2.5 rounded-full text-xs font-bold hover:bg-white hover:text-slate-900 transition-all">获取实务指南</button>
                     </div>
-                    <i class="fa-solid fa-dragon absolute -bottom-10 -right-10 text-9xl text-white/5"></i>
+                    <i class="fa-solid fa-dragon absolute -bottom-10 -right-10 text-9xl text-white/5 group-hover:text-white/10 transition-all duration-1000"></i>
                 </div>
             </div>
 
             <!-- Right: Radar Briefing (4/12) -->
-            <div class="lg:col-span-4 bg-slate-100 rounded-3xl p-8 border border-slate-200 flex flex-col h-full min-h-[500px]">
+            <div class="lg:col-span-4 bg-slate-100 rounded-3xl p-8 border border-slate-200 flex flex-col h-full min-h-[550px]">
                 <div class="flex items-center justify-between mb-8">
                     <h4 class="text-lg font-bold text-slate-900 flex items-center">
-                        <span class="w-3 h-3 bg-red-500 rounded-full mr-3"></span>
-                        知产快讯雷达
+                        <span class="w-3 h-3 bg-red-500 rounded-full mr-3"></span> 知产快讯雷达
                     </h4>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live Briefing</span>
                 </div>
-                
-                <div class="space-y-8 overflow-y-auto flex-1 custom-scrollbar pr-2">
+                <div class="space-y-6 overflow-y-auto flex-1 custom-scrollbar pr-2">
                     <!-- START_INSIGHTS -->
-                    <div class="group border-l-2 border-slate-300 hover:border-blue-600 pl-5 py-3 transition-all bg-white/50 rounded-r-lg mb-2">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] text-slate-500 font-bold font-mono tracking-tighter">2026.02.22</span>
-                            <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                    <details class="group border-l-2 border-slate-300 hover:border-blue-600 pl-4 py-3 transition-all bg-white/50 rounded-r-lg mb-3">
+                        <summary class="list-none cursor-pointer">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] text-slate-500 font-bold font-mono">2026.02.22</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                            </div>
+                            <h5 class="text-[13px] font-bold text-slate-900 group-open:text-blue-600 transition-colors leading-snug pr-4 relative">
+                                【UPC 医药诉讼】BMS 与强生（J&J）在欧开启 CAR-T 细胞疗法专利战
+                                <i class="fa-solid fa-chevron-down absolute right-0 top-1 text-[10px] transition-transform group-open:rotate-180"></i>
+                            </h5>
+                        </summary>
+                        <div class="mt-3 text-[11px] text-slate-600 leading-relaxed border-t border-slate-200/50 pt-3 space-y-2">
+                            <p><strong class="text-slate-800">摘要:</strong> BMS 旗下公司与强生旗下的 Janssen-Cilag 在欧洲就 CAR-T 细胞疗法核心专利（EP 383）展开激烈博弈。Janssen 2月初已在英国提起撤销诉讼，同时 UPC 诉讼也已同步开启，涉及多个欧洲主要市场。</p>
+                            <p><strong class="text-blue-700">洞察:</strong> 这是生物医药领域在 UPC 框架下的标杆性对峙。中企（如金斯瑞/传奇生物）需密切关注此案中关于“有效性”和“属地管辖”的判定，这直接影响高价值生物药在欧洲的市场准入和防御逻辑。</p>
+                            <p class="text-[10px] text-slate-400 italic mt-2">来源: JUVE Patent</p>
                         </div>
-                        <h5 class="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug cursor-pointer" title="【UPC 医药诉讼】BMS 与强生（J&J）在欧开启 CAR-T 细胞疗法专利战">【UPC 医药诉讼】BMS 与强生（J&J）在欧开启 CAR-T 细胞疗法专利战</h5>
-                        <p class="text-[11px] text-slate-500 mt-2 line-clamp-2 italic font-medium">来源: JUVE Patent</p>
-                    </div>
-                    <div class="group border-l-2 border-slate-300 hover:border-blue-600 pl-5 py-3 transition-all bg-white/50 rounded-r-lg mb-2">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] text-slate-500 font-bold font-mono tracking-tighter">2026.02.22</span>
-                            <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">诉讼</span>
+                    </details>
+                    <details class="group border-l-2 border-slate-300 hover:border-blue-600 pl-4 py-3 transition-all bg-white/50 rounded-r-lg mb-3">
+                        <summary class="list-none cursor-pointer">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] text-slate-500 font-bold font-mono">2026.02.22</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">诉讼</span>
+                            </div>
+                            <h5 class="text-[13px] font-bold text-slate-900 group-open:text-blue-600 transition-colors leading-snug pr-4 relative">
+                                【UPC 程序警示】杜塞尔多夫分院澄清被告不配合 CMS 系统的法律后果
+                                <i class="fa-solid fa-chevron-down absolute right-0 top-1 text-[10px] transition-transform group-open:rotate-180"></i>
+                            </h5>
+                        </summary>
+                        <div class="mt-3 text-[11px] text-slate-600 leading-relaxed border-t border-slate-200/50 pt-3 space-y-2">
+                            <p><strong class="text-slate-800">摘要:</strong> 在一项最新的证据保全令（Ex Parte Order）中，杜塞尔多夫分院明确：如果被告在收到指令后未在 UPC 案件管理系统（CMS）中及时响应，法院将对其采取更严厉的推定侵权裁定，且不接受事后以“系统不熟悉”为由的抗辩。</p>
+                            <p><strong class="text-blue-700">洞察:</strong> UPC 的电子化程序是“硬红线”。中企作为被告时，一旦收到物理送达或邮件通知，必须在 24 小时内启动 CMS 对接。建议建立专门的 UPC 电子监控岗，严防程序性违约导致的毁灭性初审结果。</p>
+                            <p class="text-[10px] text-slate-400 italic mt-2">来源: UPC Law</p>
                         </div>
-                        <h5 class="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug cursor-pointer" title="【UPC 程序警示】杜塞尔多夫分院澄清被告不配合 CMS 系统的法律后果">【UPC 程序警示】杜塞尔多夫分院澄清被告不配合 CMS 系统的法律后果</h5>
-                        <p class="text-[11px] text-slate-500 mt-2 line-clamp-2 italic font-medium">来源: UPC Law</p>
-                    </div>
-                    <div class="group border-l-2 border-slate-300 hover:border-blue-600 pl-5 py-3 transition-all bg-white/50 rounded-r-lg mb-2">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] text-slate-500 font-bold font-mono tracking-tighter">2026.02.22</span>
-                            <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">行业趋势</span>
+                    </details>
+                    <details class="group border-l-2 border-slate-300 hover:border-blue-600 pl-4 py-3 transition-all bg-white/50 rounded-r-lg mb-3">
+                        <summary class="list-none cursor-pointer">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] text-slate-500 font-bold font-mono">2026.02.22</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">行业趋势</span>
+                            </div>
+                            <h5 class="text-[13px] font-bold text-slate-900 group-open:text-blue-600 transition-colors leading-snug pr-4 relative">
+                                【WIPO 权威发布】2026 年世界知识产权报告：绿色创新扩散率创新高
+                                <i class="fa-solid fa-chevron-down absolute right-0 top-1 text-[10px] transition-transform group-open:rotate-180"></i>
+                            </h5>
+                        </summary>
+                        <div class="mt-3 text-[11px] text-slate-600 leading-relaxed border-t border-slate-200/50 pt-3 space-y-2">
+                            <p><strong class="text-slate-800">摘要:</strong> WIPO 2月20日发布的最新报告显示，全球绿色技术专利的跨国申请增长率首次超过传统能源技术。中国在太阳能和储能领域的专利扩散速度位居全球首位。</p>
+                            <p><strong class="text-blue-700">洞察:</strong> 欧洲是绿色创新的主要承接地。报告数据证实了江苏新能源集群在欧布局的领先地位，但同时也预警了随着技术扩散，专利纠纷的密度将从核心研发国向分销国转移。建议企业强化在欧洲分销渠道的侵权防御。</p>
+                            <p class="text-[10px] text-slate-400 italic mt-2">来源: WIPO</p>
                         </div>
-                        <h5 class="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug cursor-pointer" title="【WIPO 权威发布】2026 年世界知识产权报告：绿色创新扩散率创新高">【WIPO 权威发布】2026 年世界知识产权报告：绿色创新扩散率创新高</h5>
-                        <p class="text-[11px] text-slate-500 mt-2 line-clamp-2 italic font-medium">来源: WIPO</p>
-                    </div>
-                    <div class="group border-l-2 border-slate-300 hover:border-blue-600 pl-5 py-3 transition-all bg-white/50 rounded-r-lg mb-2">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] text-slate-500 font-bold font-mono tracking-tighter">2026.02.22</span>
-                            <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                    </details>
+                    <details class="group border-l-2 border-slate-300 hover:border-blue-600 pl-4 py-3 transition-all bg-white/50 rounded-r-lg mb-3">
+                        <summary class="list-none cursor-pointer">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] text-slate-500 font-bold font-mono">2026.02.22</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                            </div>
+                            <h5 class="text-[13px] font-bold text-slate-900 group-open:text-blue-600 transition-colors leading-snug pr-4 relative">
+                                【专题复盘】Edwards vs Meril：UPC 上诉法院对“执行中止”的标准定义
+                                <i class="fa-solid fa-chevron-down absolute right-0 top-1 text-[10px] transition-transform group-open:rotate-180"></i>
+                            </h5>
+                        </summary>
+                        <div class="mt-3 text-[11px] text-slate-600 leading-relaxed border-t border-slate-200/50 pt-3 space-y-2">
+                            <p><strong class="text-slate-800">摘要:</strong> 上诉法院维持了针对 Meril 心脏瓣膜专利的撤销裁定。该案的核心深度在于：法院明确了在什么情况下会为了保护“公共利益”而中止禁令的执行。这是 2026 年首个深入探讨禁令比例原则的 CoA 判例。</p>
+                            <p><strong class="text-blue-700">洞察:</strong> 对于医疗器械出海企业，此案是“救命稻草”：即使侵权成立，若能证明禁令将直接危及欧洲患者生命，仍有空间争取禁令豁免。这是从法律抗辩向社会责任抗辩转型的关键参考。</p>
+                            <p class="text-[10px] text-slate-400 italic mt-2">来源: UPC CoA</p>
                         </div>
-                        <h5 class="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug cursor-pointer" title="【专题复盘】Edwards vs Meril：UPC 上诉法院对“执行中止”的标准定义">【专题复盘】Edwards vs Meril：UPC 上诉法院对“执行中止”的标准定义</h5>
-                        <p class="text-[11px] text-slate-500 mt-2 line-clamp-2 italic font-medium">来源: UPC CoA</p>
-                    </div>
-                    <div class="group border-l-2 border-slate-300 hover:border-blue-600 pl-5 py-3 transition-all bg-white/50 rounded-r-lg mb-2">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] text-slate-500 font-bold font-mono tracking-tighter">2026.02.22</span>
-                            <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                    </details>
+                    <details class="group border-l-2 border-slate-300 hover:border-blue-600 pl-4 py-3 transition-all bg-white/50 rounded-r-lg mb-3">
+                        <summary class="list-none cursor-pointer">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] text-slate-500 font-bold font-mono">2026.02.22</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                            </div>
+                            <h5 class="text-[13px] font-bold text-slate-900 group-open:text-blue-600 transition-colors leading-snug pr-4 relative">
+                                【深度研判】G 1/25 案：为什么“说明书适应性修改”是当前的头号实务风险？
+                                <i class="fa-solid fa-chevron-down absolute right-0 top-1 text-[10px] transition-transform group-open:rotate-180"></i>
+                            </h5>
+                        </summary>
+                        <div class="mt-3 text-[11px] text-slate-600 leading-relaxed border-t border-slate-200/50 pt-3 space-y-2">
+                            <p><strong class="text-slate-800">摘要:</strong> EPO 院长近日提交的评论强化了“严谨对齐”的立场。争论点在于：如果权利要求在审理中缩小了范围，说明书里那些“不再包含在内”的实施例是否必须被物理删除。当前各技术领域审查员尺度极度不一。</p>
+                            <p><strong class="text-blue-700">洞察:</strong> 这是 Plasseraud 实务中最具争议的领域。建议江苏企业：在撰写阶段就采用“多层级权利要求结构”，并在说明书中明确标记“核心”与“备选”实施例，以应对未来可能的强制删除压力。</p>
+                            <p class="text-[10px] text-slate-400 italic mt-2">来源: EPO Official</p>
                         </div>
-                        <h5 class="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug cursor-pointer" title="【深度研判】G 1/25 案：为什么“说明书适应性修改”是当前的头号实务风险？">【深度研判】G 1/25 案：为什么“说明书适应性修改”是当前的头号实务风险？</h5>
-                        <p class="text-[11px] text-slate-500 mt-2 line-clamp-2 italic font-medium">来源: EPO Official</p>
-                    </div>
-                    <div class="group border-l-2 border-slate-300 hover:border-blue-600 pl-5 py-3 transition-all bg-white/50 rounded-r-lg mb-2">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] text-slate-500 font-bold font-mono tracking-tighter">2026.02.22</span>
-                            <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                    </details>
+                    <details class="group border-l-2 border-slate-300 hover:border-blue-600 pl-4 py-3 transition-all bg-white/50 rounded-r-lg mb-3">
+                        <summary class="list-none cursor-pointer">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] text-slate-500 font-bold font-mono">2026.02.22</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                            </div>
+                            <h5 class="text-[13px] font-bold text-slate-900 group-open:text-blue-600 transition-colors leading-snug pr-4 relative">
+                                【中企预警】Align Technology 诉时代天使案：软件功能专利成为新雷区
+                                <i class="fa-solid fa-chevron-down absolute right-0 top-1 text-[10px] transition-transform group-open:rotate-180"></i>
+                            </h5>
+                        </summary>
+                        <div class="mt-3 text-[11px] text-slate-600 leading-relaxed border-t border-slate-200/50 pt-3 space-y-2">
+                            <p><strong class="text-slate-800">摘要:</strong> UPC 杜塞尔多夫分院针对时代天使（Angelalign）软件的自动更新功能签发了初步禁令。法院认为：软件界面触发的特定逻辑流只要落入专利保护范围，即可颁布禁令，无需等待物理产品实测。</p>
+                            <p><strong class="text-blue-700">洞察:</strong> 中企软件出海（SaaS/AI）的“FTO 盲区”暴露。以往只关注后端算法，现在必须针对前端 UI 的每个交互流程（User Flow）进行专利排查。建议针对江苏智能软件出口企业进行专项合规宣讲。</p>
+                            <p class="text-[10px] text-slate-400 italic mt-2">来源: UPC Law</p>
                         </div>
-                        <h5 class="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug cursor-pointer" title="【中企预警】Align Technology 诉时代天使案：软件功能专利成为新雷区">【中企预警】Align Technology 诉时代天使案：软件功能专利成为新雷区</h5>
-                        <p class="text-[11px] text-slate-500 mt-2 line-clamp-2 italic font-medium">来源: UPC Law</p>
-                    </div>
-                    <div class="group border-l-2 border-slate-300 hover:border-blue-600 pl-5 py-3 transition-all bg-white/50 rounded-r-lg mb-2">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] text-slate-500 font-bold font-mono tracking-tighter">2026.02.21</span>
-                            <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                    </details>
+                    <details class="group border-l-2 border-slate-300 hover:border-blue-600 pl-4 py-3 transition-all bg-white/50 rounded-r-lg mb-3">
+                        <summary class="list-none cursor-pointer">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] text-slate-500 font-bold font-mono">2026.02.22</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">数据保护</span>
+                            </div>
+                            <h5 class="text-[13px] font-bold text-slate-900 group-open:text-blue-600 transition-colors leading-snug pr-4 relative">
+                                【合规红线】欧盟 DSA 实施：在线平台 IP 侵权投诉机制强制升级
+                                <i class="fa-solid fa-chevron-down absolute right-0 top-1 text-[10px] transition-transform group-open:rotate-180"></i>
+                            </h5>
+                        </summary>
+                        <div class="mt-3 text-[11px] text-slate-600 leading-relaxed border-t border-slate-200/50 pt-3 space-y-2">
+                            <p><strong class="text-slate-800">摘要:</strong> 《数字服务法案》（DSA）全面实施阶段开启。2026年2月起，未按要求建立“可验证 IP 投诉渠道”的平台将面临最高全球年营业额 6% 的罚款。亚马逊、速卖通欧洲站已更新流程。</p>
+                            <p><strong class="text-blue-700">洞察:</strong> 维权成本大幅下降。中企在欧发现假货或侵权链接时，不再需要冗长的律师函，直接利用 DSA 强制机制可实现“24 小时下架”。建议跨境电商企业熟悉各平台的 DSA 投诉入口。</p>
+                            <p class="text-[10px] text-slate-400 italic mt-2">来源: EU_Official</p>
                         </div>
-                        <h5 class="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug cursor-pointer" title="【UPC上诉法院】确认'全有或全无'规则：单一专利保护不可分割">【UPC上诉法院】确认'全有或全无'规则：单一专利保护不可分割</h5>
-                        <p class="text-[11px] text-slate-500 mt-2 line-clamp-2 italic font-medium">来源: UPC CoA</p>
-                    </div>
-                    <div class="group border-l-2 border-slate-300 hover:border-blue-600 pl-5 py-3 transition-all bg-white/50 rounded-r-lg mb-2">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] text-slate-500 font-bold font-mono tracking-tighter">2026.02.21</span>
-                            <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                    </details>
+                    <details class="group border-l-2 border-slate-300 hover:border-blue-600 pl-4 py-3 transition-all bg-white/50 rounded-r-lg mb-3">
+                        <summary class="list-none cursor-pointer">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] text-slate-500 font-bold font-mono">2026.02.22</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">商标/外观</span>
+                            </div>
+                            <h5 class="text-[13px] font-bold text-slate-900 group-open:text-blue-600 transition-colors leading-snug pr-4 relative">
+                                【知产工具】EUIPO TMview AI 图像搜索正式覆盖 TM5 全球五大局
+                                <i class="fa-solid fa-chevron-down absolute right-0 top-1 text-[10px] transition-transform group-open:rotate-180"></i>
+                            </h5>
+                        </summary>
+                        <div class="mt-3 text-[11px] text-slate-600 leading-relaxed border-t border-slate-200/50 pt-3 space-y-2">
+                            <p><strong class="text-slate-800">摘要:</strong> EUIPO 宣布其自主研发的 AI 图像搜索功能现已覆盖中国 (CNIPA)、美国 (USPTO) 等五大局数据。用户只需上传图片，即可在几秒内识别全球 60% 国际商标申请中的近似设计。</p>
+                            <p><strong class="text-blue-700">洞察:</strong> 外观侵权预警的划时代工具。江苏纺织、玩具等设计密集型产业应将其作为 FTO 的“第一站”，这比传统的关键词检索效率提升了 10 倍以上。免费且强大，强烈建议集成至企业 IP 管理工作流。</p>
+                            <p class="text-[10px] text-slate-400 italic mt-2">来源: EUIPO</p>
                         </div>
-                        <h5 class="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug cursor-pointer" title="【EPO 2026】审查指南更新：AI发明可专利性标准正式明确">【EPO 2026】审查指南更新：AI发明可专利性标准正式明确</h5>
-                        <p class="text-[11px] text-slate-500 mt-2 line-clamp-2 italic font-medium">来源: EPO</p>
-                    </div>
-                    <div class="group border-l-2 border-slate-300 hover:border-blue-600 pl-5 py-3 transition-all bg-white/50 rounded-r-lg mb-2">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] text-slate-500 font-bold font-mono tracking-tighter">2026.02.20</span>
-                            <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">商标</span>
+                    </details>
+                    <details class="group border-l-2 border-slate-300 hover:border-blue-600 pl-4 py-3 transition-all bg-white/50 rounded-r-lg mb-3">
+                        <summary class="list-none cursor-pointer">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] text-slate-500 font-bold font-mono">2026.02.22</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                            </div>
+                            <h5 class="text-[13px] font-bold text-slate-900 group-open:text-blue-600 transition-colors leading-snug pr-4 relative">
+                                【趋势解析】为什么慕尼黑与巴黎正成为全球专利诉讼的“引力中心”？
+                                <i class="fa-solid fa-chevron-down absolute right-0 top-1 text-[10px] transition-transform group-open:rotate-180"></i>
+                            </h5>
+                        </summary>
+                        <div class="mt-3 text-[11px] text-slate-600 leading-relaxed border-t border-slate-200/50 pt-3 space-y-2">
+                            <p><strong class="text-slate-800">摘要:</strong> 2025 年 UPC 侵权案件激增 50%，其中超过 70% 的案件落在慕尼黑和巴黎分院。由于这两个分院的审判节奏极快（通常 12 个月内出一审），全球权利人正加速“向欧转移”。</p>
+                            <p><strong class="text-blue-700">洞察:</strong> 江苏制造业企业必须建立“欧洲诉讼中心观”。不要以为在德、法没有业务就安全，只要有全欧流通的产品，就有可能在慕尼黑被“一站式禁令”封杀。建议在财务预算中设立“UPC 专项应诉基金”。</p>
+                            <p class="text-[10px] text-slate-400 italic mt-2">来源: JUVE Patent</p>
                         </div>
-                        <h5 class="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug cursor-pointer" title="【EUIPO】中小企业基金申请窗口延长至4月30日">【EUIPO】中小企业基金申请窗口延长至4月30日</h5>
-                        <p class="text-[11px] text-slate-500 mt-2 line-clamp-2 italic font-medium">来源: EUIPO</p>
-                    </div>
-                    <div class="group border-l-2 border-slate-300 hover:border-blue-600 pl-5 py-3 transition-all bg-white/50 rounded-r-lg mb-2">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="text-[10px] text-slate-500 font-bold font-mono tracking-tighter">2026.02.20</span>
-                            <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">诉讼</span>
+                    </details>
+                    <details class="group border-l-2 border-slate-300 hover:border-blue-600 pl-4 py-3 transition-all bg-white/50 rounded-r-lg mb-3">
+                        <summary class="list-none cursor-pointer">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] text-slate-500 font-bold font-mono">2026.02.22</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                            </div>
+                            <h5 class="text-[13px] font-bold text-slate-900 group-open:text-blue-600 transition-colors leading-snug pr-4 relative">
+                                【Plasseraud 实务】T 1392/20 案：如何将商业逻辑转化为可获权的“技术手段”？
+                                <i class="fa-solid fa-chevron-down absolute right-0 top-1 text-[10px] transition-transform group-open:rotate-180"></i>
+                            </h5>
+                        </summary>
+                        <div class="mt-3 text-[11px] text-slate-600 leading-relaxed border-t border-slate-200/50 pt-3 space-y-2">
+                            <p><strong class="text-slate-800">摘要:</strong> Plasseraud IP 资深律师解析了近期 EPO 针对商业方法专利的最新标准。通过对 T 1392/20 案的回溯，展示了如何通过强化“数据处理的特定技术目的”来绕过商业方法的不予授权门槛。</p>
+                            <p><strong class="text-blue-700">洞察:</strong> 这对江苏互联网金融及数字平台类企业至关重要。授权的秘诀不再是“算法有多牛”，而是“该算法解决了什么具体的物理/工程问题”。建议在申请阶段由专业技术专家与律师共同打磨“技术关联性”描述。</p>
+                            <p class="text-[10px] text-slate-400 italic mt-2">来源: Plasseraud IP</p>
                         </div>
-                        <h5 class="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-snug cursor-pointer" title="【里程碑】Canon 获 UPC 全欧禁令，树立侵权赔偿计算基准">【里程碑】Canon 获 UPC 全欧禁令，树立侵权赔偿计算基准</h5>
-                        <p class="text-[11px] text-slate-500 mt-2 line-clamp-2 italic font-medium">来源: UPC News</p>
-                    </div>
+                    </details>
+                    <details class="group border-l-2 border-slate-300 hover:border-blue-600 pl-4 py-3 transition-all bg-white/50 rounded-r-lg mb-3">
+                        <summary class="list-none cursor-pointer">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[10px] text-slate-500 font-bold font-mono">2026.02.22</span>
+                                <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">专利</span>
+                            </div>
+                            <h5 class="text-[13px] font-bold text-slate-900 group-open:text-blue-600 transition-colors leading-snug pr-4 relative">
+                                EPO发布2026版专利审查指南预览版 (新版)
+                                <i class="fa-solid fa-chevron-down absolute right-0 top-1 text-[10px] transition-transform group-open:rotate-180"></i>
+                            </h5>
+                        </summary>
+                        <div class="mt-3 text-[11px] text-slate-600 leading-relaxed border-t border-slate-200/50 pt-3 space-y-2">
+                            <p><strong class="text-slate-800">摘要:</strong> EPO正式发布将于2026年4月生效的审查指南预览版。重点修订内容包括AI发明和单一专利衔接。</p>
+                            <p><strong class="text-blue-700">洞察:</strong> 建议中企关注AI算法描述要求。</p>
+                            <p class="text-[10px] text-slate-400 italic mt-2">来源: EPO</p>
+                        </div>
+                    </details>
                     <!-- END_INSIGHTS -->
                 </div>
-                
                 <div class="mt-8 pt-6 border-t border-slate-200">
-                    <p class="text-[10px] text-slate-400 leading-relaxed italic">
-                        * 情报源实时监控：EPO, EUIPO, UPC, WIPO 及全球 12 家顶级知识产权媒体。
-                    </p>
+                    <p class="text-[10px] text-slate-400 italic">每日监控: EPO, EUIPO, UPC, WIPO, JUVE Patent, IPWatchdog.</p>
                 </div>
             </div>
-
         </div>
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-12">
-        <div class="max-w-7xl mx-auto px-4 text-center md:text-left">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div>
-                    <p class="text-slate-900 font-bold text-lg">Atom TONG</p>
-                    <p class="text-slate-400 text-xs mt-1">&copy; 2026 Atom TONG. All rights reserved.</p>
-                </div>
-                <div class="mt-4 md:mt-0 text-[10px] text-slate-400">
-                    Powered by Pi Operative System | Plasseraud IP Network
-                </div>
-            </div>
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-slate-900 font-bold">Atom TONG</p>
+            <p class="text-slate-400 text-xs mt-1">&copy; 2026 Atom TONG. All rights reserved. | Plasseraud IP Network</p>
         </div>
     </footer>
 
