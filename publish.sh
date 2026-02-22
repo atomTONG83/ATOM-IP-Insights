@@ -5,6 +5,9 @@ PROJECT_DIR="/Users/atom1983/.openclaw/workspace/core/atom_ip_platform"
 
 echo "🚀 准备发布最新内容到 www.atom-ip.com..."
 
+# 运行自动化同步
+python3 $PROJECT_DIR/scripts/atom_ip_site_sync.py
+
 cd $PROJECT_DIR
 
 # 检查是否有更改
