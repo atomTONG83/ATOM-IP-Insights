@@ -35,19 +35,20 @@
                     <a href="#trends" class="hover:text-cyan-600 transition">趋势</a>
                     <a href="#cases" class="hover:text-cyan-600 transition">判例</a>
                     <a href="#sectors" class="hover:text-cyan-600 transition">行业</a>
+                    <a href="#process" class="hover:text-cyan-600 transition">流程</a>
                 </nav>
             </div>
         </div>
     </nav>
 
-    <!-- Intro / Hook -->
+    <!-- Header Section -->
     <section class="container mx-auto px-4 py-12">
         <div class="text-center max-w-4xl mx-auto mb-12">
             <h2 class="text-4xl md:text-5xl font-extrabold mb-6 text-gradient leading-tight">
                 统一专利法院 (UPC)<br>运行全景与最新动态
             </h2>
             <p class="text-lg text-slate-600 leading-relaxed">
-                自2023年6月1日启动以来，统一专利法院 (UPC) 已彻底改变了欧洲的专利诉讼格局。 从<strong>初步禁令(PI)</strong>的频繁颁布到<strong>撤销诉讼</strong>的快速裁决，UPC正展现出其高效与亲专利权人的倾向。
+                自2023年6月1日启动以来，统一专利法院 (UPC) 已彻底改变了欧洲的专利诉讼格局。 从<strong>初步禁令(PI)</strong>的频繁颁布到<strong>撤销诉讼</strong>的快速裁决，UPC正展现出其高效与亲专利权人的倾向。 本报告旨在通过可视化数据，梳理重要判例并分析其背后的司法逻辑。
             </p>
         </div>
 
@@ -61,58 +62,60 @@
             <div class="bg-white p-6 rounded-lg shadow border-l-4 border-cyan-500">
                 <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider">主要诉讼语言</h3>
                 <p class="text-4xl font-extrabold text-cyan-600 mt-2">英语</p>
-                <p class="text-xs text-slate-500 mt-2">占比约 51%</p>
+                <p class="text-xs text-slate-500 mt-2">占比约 51% (超过德语)</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow border-l-4 border-orange-500">
                 <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider">平均裁决周期</h3>
                 <p class="text-4xl font-extrabold text-orange-600 mt-2">12 个月</p>
-                <p class="text-xs text-slate-500 mt-2">高效司法闭环</p>
+                <p class="text-xs text-slate-500 mt-2">显著快于德国国家法院</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow border-l-4 border-indigo-500">
                 <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider">最活跃法庭</h3>
                 <p class="text-4xl font-extrabold text-indigo-700 mt-2">慕尼黑</p>
-                <p class="text-xs text-slate-500 mt-2">德国分院领跑</p>
+                <p class="text-xs text-slate-500 mt-2">受理量遥遥领先</p>
             </div>
         </div>
     </section>
 
-    <!-- Trends Section -->
+    <!-- Section: Trends & Geography -->
     <section id="trends" class="bg-slate-50 py-12">
         <div class="container mx-auto px-4">
             <div class="mb-10">
                 <h3 class="text-2xl font-bold text-slate-800 border-l-4 border-cyan-500 pl-4">案件分布与趋势分析</h3>
+                <p class="mt-2 text-slate-600">了解诉讼活动的热点区域以及语言选择趋势，对于制定欧洲诉讼策略至关重要。慕尼黑分院目前是全球专利权人的首选战场。</p>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="glass-card">
                     <h4 class="text-lg font-bold mb-4 text-blue-900">各地方分院案件受理量排行</h4>
+                    <p class="text-sm text-slate-500 mb-4">慕尼黑因其在禁令颁布上的高效性而备受青睐。</p>
                     <div class="chart-container"><canvas id="divisionChart"></canvas></div>
                 </div>
                 <div class="glass-card">
                     <h4 class="text-lg font-bold mb-4 text-blue-900">诉讼程序语言分布</h4>
+                    <p class="text-sm text-slate-500 mb-4">尽管德国分院案件量大，但大量案件选择使用英语进行，降低了国际诉讼门槛。</p>
                     <div class="chart-container"><canvas id="languageChart"></canvas></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Case Law Section -->
+    <!-- Section: Key Case Law -->
     <section id="cases" class="container mx-auto px-4 py-16">
         <div class="mb-12 text-center">
-            <span class="bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1 rounded-full uppercase">核心判例</span>
+            <span class="bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1 rounded-full uppercase">核心判例解读</span>
             <h3 class="text-3xl font-bold text-slate-800 mt-4">UPC 运行至今的重要判例解读</h3>
+            <p class="mt-4 text-slate-600 max-w-2xl mx-auto">以下判例确立了UPC在证据保全、初步禁令及权利要求解释方面的早期司法标准。</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Case 1 -->
             <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200 hover:shadow-xl transition">
                 <div class="bg-blue-900 p-4 text-white flex justify-between items-center">
                     <span class="font-bold text-lg">10x Genomics v. NanoString</span>
-                    <span class="text-xs bg-blue-700 px-2 py-1 rounded">慕尼黑/上诉法院</span>
+                    <span class="text-xs bg-blue-700 px-2 py-1 rounded">慕尼黑分院 / 上诉法院</span>
                 </div>
                 <div class="p-6">
-                    <h5 class="font-bold text-cyan-700 mb-2">争议焦点：PI 颁布标准</h5>
-                    <div class="bg-slate-50 p-4 rounded border-l-4 border-orange-500 text-sm">
-                        确立了法院必须拥有“足够程度的确定性(sufficient degree of certainty)”才能颁布禁令。
-                    </div>
+                    <h5 class="font-bold text-cyan-700 mb-2">争议焦点：初步禁令 (PI) 的颁布标准</h5>
+                    <p class="text-sm text-slate-600 mb-4">确立了颁布PI的高标准——法院必须拥有“足够程度的确定性”，认为专利有效且受到侵权。如果专利有效性存疑，禁令可能被驳回。</p>
                 </div>
             </div>
             <!-- Case 2 -->
@@ -123,40 +126,111 @@
                 </div>
                 <div class="p-6">
                     <h5 class="font-bold text-cyan-700 mb-2">争议焦点：专利撤销与创造性</h5>
-                    <div class="bg-slate-50 p-4 rounded border-l-4 border-cyan-500 text-sm">
-                        UPC 采取了更为灵活的务实态度评估创造性，最终撤销了相关专利。
+                    <p class="text-sm text-slate-600 mb-4">UPC在评估创造性时采取了更为灵活的务实态度。最终该专利因缺乏创造性被撤销。</p>
+                </div>
+            </div>
+            <!-- Case 3 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200 hover:shadow-xl transition">
+                <div class="bg-blue-900 p-4 text-white flex justify-between items-center">
+                    <span class="font-bold text-lg">Franz Kaldewei v. Bette</span>
+                    <span class="text-xs bg-blue-700 px-2 py-1 rounded">上诉法院</span>
+                </div>
+                <div class="p-6">
+                    <h5 class="font-bold text-cyan-700 mb-2">争议焦点：证据展示与Saisie</h5>
+                    <p class="text-sm text-slate-600 mb-4">法院澄清了对于证据展示的具体要求，确立了如果被告未能提供充分反证，法院可以做出对原告有利的推定。</p>
+                </div>
+            </div>
+            <!-- Case 4 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200 hover:shadow-xl transition">
+                <div class="bg-blue-900 p-4 text-white flex justify-between items-center">
+                    <span class="font-bold text-lg">Oerlikon v. Himson</span>
+                    <span class="text-xs bg-blue-700 px-2 py-1 rounded">米兰分院</span>
+                </div>
+                <div class="p-6">
+                    <h5 class="font-bold text-cyan-700 mb-2">争议焦点：展会期间的证据保全</h5>
+                    <p class="text-sm text-slate-600 mb-4">证明了UPC作为“快速反应部队”的能力。法院在极短时间内批准了保全申请，确立了UPC在处理紧急商业情况下的管辖权效力。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: Industry Analysis -->
+    <section id="sectors" class="bg-slate-100 py-12">
+        <div class="container mx-auto px-4">
+            <h3 class="text-2xl font-bold text-slate-800 mb-6">行业参与度分析</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-lg shadow h-full">
+                        <h4 class="text-xl font-bold text-blue-900 mb-4">谁在使用 UPC?</h4>
+                        <p class="text-slate-600 text-sm mb-4">虽然最初人们预测汽车和机械行业会持观望态度，但数据显示，<strong>电子/通信 (SEP)</strong> 和 <strong>生命科学 (Pharma/Bio)</strong> 行业最为活跃。</p>
+                        <p class="text-slate-600 text-sm mb-4">医疗器械巨头和通信巨头正在利用UPC作为全球专利战的关键筹码。</p>
+                        <ul class="space-y-2 mt-6">
+                            <li class="flex items-center text-sm font-medium text-slate-700"><span class="w-3 h-3 bg-blue-600 rounded-full mr-2"></span> 电子工程 (最高占比)</li>
+                            <li class="flex items-center text-sm font-medium text-slate-700"><span class="w-3 h-3 bg-cyan-500 rounded-full mr-2"></span> 医疗技术</li>
+                            <li class="flex items-center text-sm font-medium text-slate-700"><span class="w-3 h-3 bg-orange-500 rounded-full mr-2"></span> 化学与制药</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="glass-card">
+                        <h4 class="text-lg font-bold mb-4 text-blue-900">IPC 技术领域案件分布 (2023-2024)</h4>
+                        <div class="chart-container"><canvas id="techSectorChart"></canvas></div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Industry Analysis -->
-    <section id="sectors" class="bg-slate-100 py-12">
-        <div class="container mx-auto px-4 text-center">
-            <h3 class="text-2xl font-bold text-slate-800 mb-6">IPC 技术领域案件分布</h3>
-            <div class="max-w-4xl mx-auto glass-card">
-                <div class="chart-container"><canvas id="techSectorChart"></canvas></div>
+    <!-- Section: Process Timeline (FIXED: Added missing descriptions) -->
+    <section id="process" class="container mx-auto px-4 py-16 mb-12">
+        <h3 class="text-2xl font-bold text-center text-slate-800 mb-8">UPC 标准诉讼流程：速度是核心</h3>
+        <div class="flex flex-col md:flex-row justify-between items-stretch gap-4 max-w-5xl mx-auto">
+            <!-- Step 1 -->
+            <div class="flex-1 flex flex-col items-center">
+                <div class="bg-white border-2 border-blue-900 text-blue-900 font-bold py-3 px-6 rounded-lg w-full text-center shadow-md">起诉与答辩</div>
+                <div class="text-xs text-slate-500 mt-2 text-center">前 3 个月</div>
+                <p class="text-sm text-slate-600 mt-2 text-center bg-slate-100 p-2 rounded">交换书面意见，确定争议范围。</p>
+            </div>
+            <div class="hidden md:block text-2xl text-slate-300 self-center">➔</div>
+            <!-- Step 2 -->
+            <div class="flex-1 flex flex-col items-center">
+                <div class="bg-blue-100 border-2 border-blue-400 text-blue-900 font-bold py-3 px-6 rounded-lg w-full text-center shadow-md">临时会议</div>
+                <div class="text-xs text-slate-500 mt-2 text-center">第 4-6 个月</div>
+                <p class="text-sm text-slate-600 mt-2 text-center bg-slate-100 p-2 rounded">法官主导，清理证据，准备庭审。</p>
+            </div>
+            <div class="hidden md:block text-2xl text-slate-300 self-center">➔</div>
+            <!-- Step 3 -->
+            <div class="flex-1 flex flex-col items-center">
+                <div class="bg-cyan-500 text-white font-bold py-3 px-6 rounded-lg w-full text-center shadow-md">口头庭审</div>
+                <div class="text-xs text-slate-500 mt-2 text-center">第 9-10 个月</div>
+                <p class="text-sm text-slate-600 mt-2 text-center bg-slate-100 p-2 rounded">核心辩论，通常在一天内完成。</p>
+            </div>
+            <div class="hidden md:block text-2xl text-slate-300 self-center">➔</div>
+            <!-- Step 4 -->
+            <div class="flex-1 flex flex-col items-center">
+                <div class="bg-orange-500 text-white font-bold py-3 px-6 rounded-lg w-full text-center shadow-md">最终裁决</div>
+                <div class="text-xs text-slate-500 mt-2 text-center">第 12 个月</div>
+                <p class="text-sm text-slate-600 mt-2 text-center bg-slate-100 p-2 rounded">快速出具书面判决，立即执行。</p>
             </div>
         </div>
     </section>
 
-    <footer class="bg-blue-900 text-white py-8 mt-12 text-center">
-        <p class="text-sm text-blue-200">&copy; 2026 Atom IP Insights - 专业法律数据研究报告</p>
+    <footer class="bg-blue-900 text-white py-8 text-center">
+        <p class="text-sm text-blue-200">&copy; 2026 Atom IP Insights - 基于 HTML5 Canvas 与 Tailwind 生成</p>
     </footer>
 
     <script>
-        // Chart Initialization (from user snippet)
+        // Data logic: Consistent with original infographic
         const commonTooltipOptions = { callbacks: { title: t => t[0].chart.data.labels[t[0].dataIndex] } };
         
         // Division Chart
         new Chart(document.getElementById('divisionChart').getContext('2d'), {
             type: 'bar',
             data: {
-                labels: ['慕尼黑', '巴黎', '杜塞尔多夫', '曼海姆', '米兰'],
-                datasets: [{ label: '案件量', data: [145, 62, 38, 45, 18], backgroundColor: '#1e3a8a' }]
+                labels: ['慕尼黑', '巴黎', '杜塞尔多夫', '曼海姆', '巴黎中央', '米兰'],
+                datasets: [{ label: '受理案件数量', data: [145, 62, 38, 45, 30, 18], backgroundColor: '#1e3a8a' }]
             },
-            options: { indexAxis: 'y', maintainAspectRatio: false }
+            options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
 
         // Language Chart
@@ -173,10 +247,10 @@
         new Chart(document.getElementById('techSectorChart').getContext('2d'), {
             type: 'bar',
             data: {
-                labels: ['电子工程', '医疗技术', '数字通讯', '生物技术'],
+                labels: ['电子工程', '医疗技术', '数字通讯', '交通运输', '生物技术'],
                 datasets: [
-                    { label: '侵权', data: [85, 45, 40, 25], backgroundColor: '#06b6d4' },
-                    { label: '撤销', data: [35, 20, 15, 25], backgroundColor: '#f97316' }
+                    { label: '侵权诉讼', data: [85, 45, 40, 30, 25], backgroundColor: '#06b6d4' },
+                    { label: '撤销/无效', data: [35, 20, 15, 5, 25], backgroundColor: '#f97316' }
                 ]
             },
             options: { maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
