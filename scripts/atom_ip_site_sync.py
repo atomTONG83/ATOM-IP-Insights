@@ -16,24 +16,20 @@ def update_platform():
     with open(DATA_FILE, 'r', encoding='utf-8') as f:
         data = json.load(f)
     
-    # 2. 提取最近的 5 条
-    # 数据格式：{"date": "2026-02-22", "title_cn": "...", "summary_cn": "...", ...}
-    # 假设数据是按日期排序的，或者我们需要排序
-    sorted_data = sorted(data, key=lambda x: x.get('date', ''), reverse=True)[:5]
+    # 2. 提取最近的 10 条
+    sorted_data = sorted(data, key=lambda x: x.get('date', ''), reverse=True)[:10]
     
     insights_html = ""
     for item in sorted_data:
         date_str = item.get('date', '').replace('-', '.')
         title = item.get('title_cn', '无标题')
-        summary = item.get('summary_cn', '')[:60] + "..."
+        source = item.get('source', 'Intel')
         
+        # 适配深色侧边栏样式
         insights_html += f"""
-                    <div class="flex items-start">
-                        <span class="text-slate-400 text-xs font-mono pt-1 w-24">{date_str}</span>
-                        <div class="flex-1 ml-4">
-                            <h5 class="font-semibold hover:text-blue-600 cursor-pointer">{title}</h5>
-                            <p class="text-xs text-slate-500 mt-1">{summary}</p>
-                        </div>
+                    <div class="border-l border-slate-700 pl-4 py-1">
+                        <span class="text-[10px] text-slate-500 font-mono block mb-1">{date_str} [{source}]</span>
+                        <h5 class="text-xs font-semibold hover:text-blue-400 cursor-pointer line-clamp-2" title="{title}">{title}</h5>
                     </div>"""
 
     # 3. 注入 HTML
@@ -48,7 +44,7 @@ def update_platform():
         
         with open(HTML_FILE, 'w', encoding='utf-8') as f:
             f.write(new_content)
-        print(f"✅ 成功同步 {len(sorted_data)} 条动态到 Atom IP Platform")
+        print(f"✅ 成功同步 {len(sorted_data)} 条动态到 Atom TONG Platform")
     else:
         print("❌ 未找到 HTML 标记位")
 
