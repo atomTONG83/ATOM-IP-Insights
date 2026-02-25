@@ -62,6 +62,18 @@
             </div>
         </div>
 
+        <!-- Quick Stats (Added) -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="glass p-3 rounded-xl card flex justify-between items-center shadow-sm">
+                <span class="text-[10px] font-bold text-dim uppercase">本周</span>
+                <span id="weekly-total" class="font-bold text-main text-sm">0.0 h</span>
+            </div>
+            <div class="glass p-3 rounded-xl card flex justify-between items-center shadow-sm">
+                <span class="text-[10px] font-bold text-dim uppercase">本月</span>
+                <span id="monthly-total" class="font-bold text-main text-sm">0.0 h</span>
+            </div>
+        </div>
+
         <div class="glass rounded-2xl shadow-sm overflow-hidden mb-8">
             <div class="px-4 py-3 border-b border-slate-50 flex justify-between items-center bg-sub">
                 <h2 class="text-sm font-bold text-main">云端历史记录</h2>
@@ -73,7 +85,9 @@
                         <tr class="text-slate-400 font-bold uppercase">
                             <th class="px-4 py-2">日期</th>
                             <th class="px-4 py-2">案号</th>
+                            <th class="px-4 py-2">内容</th>
                             <th class="px-4 py-2 text-right">工时</th>
+                            <th class="px-4 py-2 text-center">操作</th>
                         </tr>
                     </thead>
                     <tbody id="history-body" class="divide-y divide-slate-50"></tbody>
@@ -205,12 +219,68 @@
         function updateUI() {
             const body = document.getElementById('history-body');
             body.innerHTML = '';
+            
+            let week = 0, month = 0, now = new Date();
+            let startW = new Date(now.setDate(now.getDate() - now.getDay())).toISOString().split('T')[0];
+            let startM = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+
             history.forEach(r => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="px-4 py-2 text-dim">${r.date}</td><td class="px-4 py-2 font-bold text-blue-500">${r.case_number}</td><td class="px-4 py-2 text-right font-mono font-bold text-main">${r.duration_hours.toFixed(2)}</td>`;
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-4 py-2 text-dim">${r.date}</td>
+                    <td class="px-4 py-2 font-bold text-blue-500">${r.case_number}</td>
+                    <td class="px-4 py-2 text-dim truncate max-w-[120px]">${r.content || '-'}</td>
+                    <td class="px-4 py-2 text-right font-mono font-bold text-main">${r.duration_hours.toFixed(2)}</td>
+                    <td class="px-4 py-2 text-center">
+                        <div class="flex justify-center gap-2">
+                            <button onclick="editRec(${r.timestamp})" class="text-slate-300 hover:text-blue-500"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="delRec(${r.timestamp})" class="text-slate-300 hover:text-red-500"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
                 body.appendChild(tr);
+                
+                if (r.date >= startW) week += r.duration_hours;
+                if (r.date >= startM) month += r.duration_hours;
             });
+            
+            document.getElementById('weekly-total').textContent = week.toFixed(1) + ' h';
+            document.getElementById('monthly-total').textContent = month.toFixed(1) + ' h';
         }
+
+        window.editRec = async (ts) => {
+            const r = history.find(i => i.timestamp === ts);
+            const nCase = prompt("修改案号:", r.case_number);
+            const nCont = prompt("修改内容:", r.content);
+            const nTime = prompt("修改工时 (小时):", r.duration_hours);
+            
+            if (nCase !== null && nCont !== null && nTime !== null) {
+                const { error } = await supabaseClient.from('workload_records')
+                    .update({ case_number: nCase, content: nCont, duration_hours: parseFloat(nTime) })
+                    .eq('timestamp', ts);
+                
+                if (error) {
+                    alert("更新失败: " + error.message);
+                } else {
+                    r.case_number = nCase;
+                    r.content = nCont;
+                    r.duration_hours = parseFloat(nTime);
+                    updateUI();
+                }
+            }
+        };
+
+        window.delRec = async (ts) => {
+            if (!confirm("确定要删除这条云端记录吗？")) return;
+            const { error } = await supabaseClient.from('workload_records').delete().eq('timestamp', ts);
+            if (error) {
+                alert("删除失败: " + error.message);
+            } else {
+                history = history.filter(i => i.timestamp !== ts);
+                updateUI();
+            }
+        };
 
         // Theme Toggle
         const themeBtn = document.getElementById('themeToggle');
