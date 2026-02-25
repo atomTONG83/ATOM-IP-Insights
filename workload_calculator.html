@@ -74,9 +74,13 @@
             </div>
         </div>
 
+        <!-- History -->
         <div class="glass rounded-2xl shadow-sm overflow-hidden mb-8">
             <div class="px-4 py-3 border-b border-slate-50 flex justify-between items-center bg-sub">
-                <h2 class="text-sm font-bold text-main">云端历史记录</h2>
+                <div class="flex items-center gap-4">
+                    <h2 class="text-sm font-bold text-main">云端历史记录</h2>
+                    <input type="text" id="historySearch" placeholder="搜索案号..." class="px-3 py-1 text-[10px] rounded-full border border-slate-200 outline-none focus:ring-1 focus:ring-blue-500 bg-white/50 w-32">
+                </div>
                 <span class="text-[10px] text-orange-500 font-bold tracking-widest">SYNC ENABLED</span>
             </div>
             <div class="max-h-60 overflow-y-auto">
@@ -92,6 +96,9 @@
                     </thead>
                     <tbody id="history-body" class="divide-y divide-slate-50"></tbody>
                 </table>
+            </div>
+            <div id="showAllContainer" class="px-4 py-2 text-center bg-slate-50/50 border-t border-slate-50 hidden">
+                <button id="showAllBtn" class="text-[10px] font-bold text-slate-400 hover:text-blue-500 transition-colors">显示全部记录</button>
             </div>
         </div>
     </div>
@@ -114,20 +121,22 @@
         const stopBtn = document.getElementById('stopBtn');
         const pomoBtn = document.getElementById('pomodoroBtn');
         const pomoText = document.getElementById('pomo-text');
+        const historySearch = document.getElementById('historySearch');
+        const showAllBtn = document.getElementById('showAllBtn');
+        let showAll = false;
 
         async function loadData() {
             try {
-                const { data, error } = await supabaseClient.from('workload_records').select('*').order('timestamp', { ascending: false }).limit(20);
+                const { data, error } = await supabaseClient.from('workload_records').select('*').order('timestamp', { ascending: false }).limit(showAll ? 1000 : 50);
                 if (error) throw error;
                 if (data) { history = data; updateUI(); }
             } catch (e) { 
                 console.error("Load failed", e);
-                // Only alert if it's a real connection error, not just empty
-                if (e.message && e.message !== "Unexpected end of JSON input") {
-                    alert("云端加载失败: " + e.message + "\n请检查 Supabase 表名和 RLS 设置。");
-                }
             }
         }
+
+        historySearch.oninput = () => updateUI();
+        showAllBtn.onclick = () => { showAll = true; loadData(); };
 
         function formatTime(ms) {
             let h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000), s = Math.floor((ms%60000)/1000);
@@ -218,13 +227,27 @@
 
         function updateUI() {
             const body = document.getElementById('history-body');
+            const searchTerm = historySearch.value.toLowerCase();
             body.innerHTML = '';
             
             let week = 0, month = 0, now = new Date();
             let startW = new Date(now.setDate(now.getDate() - now.getDay())).toISOString().split('T')[0];
             let startM = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
 
-            history.forEach(r => {
+            let filtered = history.filter(r => 
+                (r.case_number || "").toLowerCase().includes(searchTerm) || 
+                (r.content || "").toLowerCase().includes(searchTerm)
+            );
+
+            const displayLimit = 15;
+            if (!showAll && filtered.length > displayLimit) {
+                document.getElementById('showAllContainer').classList.remove('hidden');
+                filtered = filtered.slice(0, displayLimit);
+            } else {
+                document.getElementById('showAllContainer').classList.add('hidden');
+            }
+
+            filtered.forEach(r => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors";
                 tr.innerHTML = `
@@ -240,7 +263,10 @@
                     </td>
                 `;
                 body.appendChild(tr);
-                
+            });
+
+            // Stats use full local cache
+            history.forEach(r => {
                 if (r.date >= startW) week += r.duration_hours;
                 if (r.date >= startM) month += r.duration_hours;
             });
