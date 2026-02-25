@@ -19,24 +19,26 @@
         .light .glass { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .light input { background-color: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
         .light input::placeholder { color: #64748b; }
-        .light #display { color: #0f172a; text-shadow: none; }
-        .light .stats-card { background: #ffffff; border: 1px solid #e2e8f0; }
-        .light .text-dim { color: #475569; } /* Darker gray for light mode */
+        .light #display { color: #000000; text-shadow: none; }
+        .light .stats-card { background: #ffffff; border: 2px solid #e2e8f0; }
+        .light .stats-card span:first-child { color: #475569 !important; font-weight: 800; } /* Stats Label */
+        .light .stats-card .text-3xl { color: #1e293b !important; } /* Stats Value */
+        .light .text-dim { color: #475569; }
         .light .text-caption { color: #64748b; }
 
         body.dark { background-color: #020617; color: #f8fafc; }
         .dark .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .dark input { background-color: #1e293b !important; color: #ffffff !important; border: 1px solid #334155 !important; }
-        .dark #display { color: #38bdf8; text-shadow: 0 0 20px rgba(56, 189, 248, 0.3); }
+        .dark #display { color: #38bdf8; text-shadow: 0 0 30px rgba(56, 189, 248, 0.4); }
         .dark .stats-card { background: #0f172a; border: 1px solid #1e293b; }
         
         /* Mobile App Scaling */
         @media (max-width: 640px) {
-            #display { font-size: 5rem !important; }
-            input { font-size: 1.1rem !important; padding-top: 1.25rem !important; padding-bottom: 1.25rem !important; }
-            .btn-text { font-size: 0.9rem !important; }
-            .record-title { font-size: 1.1rem !important; }
-            .record-content { font-size: 0.9rem !important; }
+            #display { font-size: 6.5rem !important; }
+            input { font-size: 1rem !important; padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+            .btn-text { font-size: 0.85rem !important; }
+            .record-title { font-size: 1rem !important; }
+            .record-content { font-size: 0.85rem !important; }
         }
 
         .safe-bottom { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
@@ -70,26 +72,26 @@
     <main class="flex-1 p-5 max-w-lg mx-auto w-full space-y-8">
         
         <!-- Timer Section (Hero) -->
-        <section class="relative py-8 flex flex-col items-center justify-center">
-            <div id="live-clock" class="absolute top-0 text-xs font-mono text-slate-500 dark:text-slate-500 tracking-widest uppercase">2026-02-25 02:22:00</div>
+        <section class="relative py-6 flex flex-col items-center justify-center px-4">
+            <div id="live-clock" class="absolute top-0 text-xs font-mono text-slate-400 dark:text-slate-500 tracking-widest uppercase">2026-02-25 02:22:00</div>
             
-            <div id="display" class="timer-font text-[5rem] font-bold text-slate-900 dark:text-blue-400 leading-none transition-all">00:00:00</div>
+            <div id="display" class="timer-font text-[5rem] font-bold text-slate-900 dark:text-blue-400 leading-none transition-all scale-110 md:scale-125">00:00:00</div>
             
-            <div class="mt-6 flex items-center gap-2 px-4 py-1.5 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-full text-xs font-bold uppercase tracking-widest">
+            <div class="mt-8 flex items-center gap-2 px-4 py-1.5 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-full text-xs font-bold uppercase tracking-widest">
                 <i class="fa-solid fa-fire animate-pulse text-orange-500"></i>
                 Atom TONG Tactical
             </div>
         </section>
 
         <!-- Input Section -->
-        <section class="space-y-4">
+        <section class="space-y-3 px-2">
             <div class="relative">
                 <i class="fa-solid fa-folder-open absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                <input type="text" id="case-number" placeholder="案件编号 (Case #)" class="w-full pl-12 pr-4 py-5 rounded-3xl border-none ring-1 ring-slate-200 dark:ring-slate-800 bg-slate-50 dark:bg-slate-800 text-lg font-bold outline-none transition-all focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="case-number" placeholder="案件编号 (Case #)" class="w-full pl-12 pr-4 py-3.5 rounded-2xl border-none ring-1 ring-slate-200 dark:ring-slate-800 bg-slate-50 dark:bg-slate-800 text-base font-bold outline-none transition-all focus:ring-2 focus:ring-blue-500">
             </div>
             <div class="relative">
                 <i class="fa-solid fa-pen-nib absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                <input type="text" id="work-content" placeholder="工作内容描述..." class="w-full pl-12 pr-4 py-5 rounded-3xl border-none ring-1 ring-slate-200 dark:ring-slate-800 bg-slate-50 dark:bg-slate-800 text-lg font-bold outline-none transition-all focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="work-content" placeholder="工作内容描述..." class="w-full pl-12 pr-4 py-3.5 rounded-2xl border-none ring-1 ring-slate-200 dark:ring-slate-800 bg-slate-50 dark:bg-slate-800 text-base font-bold outline-none transition-all focus:ring-2 focus:ring-blue-500">
             </div>
         </section>
 
