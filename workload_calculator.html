@@ -54,7 +54,7 @@
         }
 
         .safe-bottom { padding-bottom: calc(30px + env(safe-area-inset-bottom)); }
-        .safe-top { padding-top: calc(60px + env(safe-area-inset-top)); }
+        .safe-top { padding-top: calc(42px + env(safe-area-inset-top)); }
         @keyframes pulse-red { 0%, 100% { } 50% { background-color: rgba(239, 68, 68, 0.1); } }
         .pomodoro-end { animation: pulse-red 1s infinite; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -67,7 +67,7 @@
 <body class="light bg-slate-50 dark:bg-slate-900 min-h-screen flex flex-col no-scrollbar">
 
     <!-- Top Navigation Bar -->
-    <nav class="safe-top sticky top-0 z-50 flex justify-between items-center px-6 pb-4 glass shadow-sm" style="min-height: 100px;">
+    <nav class="safe-top sticky top-0 z-50 flex justify-between items-center px-6 pb-4 glass shadow-sm">
         <div class="flex items-center gap-3">
             <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/30">
                 <i class="fa-solid fa-fire-flame-curved text-white text-sm"></i>
