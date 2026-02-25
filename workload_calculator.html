@@ -15,11 +15,14 @@
         .timer-font { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
         
         /* Clear Mode Distinction */
-        body.light { background-color: #ffffff; color: #0f172a; }
-        .light .glass { background: rgba(248, 250, 252, 0.9); backdrop-filter: blur(10px); border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .light input { background-color: #f1f5f9 !important; color: #0f172a !important; border: 1px solid #e2e8f0 !important; }
-        .light #display { color: #1e293b; text-shadow: none; }
-        .light .stats-card { background: #f8fafc; border: 1px solid #e2e8f0; }
+        body.light { background-color: #f8fafc; color: #0f172a; }
+        .light .glass { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .light input { background-color: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
+        .light input::placeholder { color: #64748b; }
+        .light #display { color: #0f172a; text-shadow: none; }
+        .light .stats-card { background: #ffffff; border: 1px solid #e2e8f0; }
+        .light .text-dim { color: #475569; } /* Darker gray for light mode */
+        .light .text-caption { color: #64748b; }
 
         body.dark { background-color: #020617; color: #f8fafc; }
         .dark .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
@@ -54,10 +57,10 @@
             <span class="font-bold text-slate-900 dark:text-white tracking-tight">Brain-Burn</span>
         </div>
         <div class="flex items-center gap-4">
-            <button id="themeToggle" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 transition-all">
+            <button id="themeToggle" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 transition-all">
                 <i id="themeIcon" class="fa-solid fa-moon"></i>
             </button>
-            <a href="index.html" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+            <a href="index.html" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                 <i class="fa-solid fa-house"></i>
             </a>
         </div>
@@ -68,11 +71,11 @@
         
         <!-- Timer Section (Hero) -->
         <section class="relative py-8 flex flex-col items-center justify-center">
-            <div id="live-clock" class="absolute top-0 text-xs font-mono text-slate-400 dark:text-slate-500 tracking-widest uppercase">2026-02-25 02:22:00</div>
+            <div id="live-clock" class="absolute top-0 text-xs font-mono text-slate-500 dark:text-slate-500 tracking-widest uppercase">2026-02-25 02:22:00</div>
             
             <div id="display" class="timer-font text-[5rem] font-bold text-slate-900 dark:text-blue-400 leading-none transition-all">00:00:00</div>
             
-            <div class="mt-6 flex items-center gap-2 px-4 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold uppercase tracking-widest">
+            <div class="mt-6 flex items-center gap-2 px-4 py-1.5 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-full text-xs font-bold uppercase tracking-widest">
                 <i class="fa-solid fa-fire animate-pulse text-orange-500"></i>
                 Atom TONG Tactical
             </div>
@@ -244,16 +247,16 @@
                 item.className = "glass p-5 rounded-[2rem] flex justify-between items-center shadow-sm";
                 item.innerHTML = `
                     <div class="flex flex-col gap-1">
-                        <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider">${r.date}</span>
-                        <span class="text-base font-black text-blue-600 dark:text-blue-400 record-title">${r.case_number}</span>
-                        <span class="text-xs text-slate-500 dark:text-slate-400 font-medium record-content line-clamp-1">${r.content || ''}</span>
+                        <span class="text-[9px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-wider">${r.date}</span>
+                        <span class="text-base font-black text-blue-700 dark:text-blue-400 record-title">${r.case_number}</span>
+                        <span class="text-xs text-slate-700 dark:text-slate-400 font-medium record-content line-clamp-1">${r.content || ''}</span>
                     </div>
                     <div class="flex items-center gap-5">
                         <div class="text-right">
-                            <span class="text-lg font-black dark:text-white">${r.duration_hours.toFixed(2)}</span>
-                            <span class="text-[9px] font-black text-slate-400">H</span>
+                            <span class="text-lg font-black text-slate-900 dark:text-white">${r.duration_hours.toFixed(2)}</span>
+                            <span class="text-[9px] font-black text-slate-500 dark:text-slate-400">H</span>
                         </div>
-                        <button onclick="delRec(${r.timestamp})" class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-300 hover:text-red-500 transition-colors">
+                        <button onclick="delRec(${r.timestamp})" class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-red-500 transition-colors">
                             <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
                     </div>
