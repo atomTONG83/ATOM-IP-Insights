@@ -9,7 +9,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; transition: all 0.3s; }
+        body { font-family: 'Inter', sans-serif; transition: all 0.3s; -webkit-tap-highlight-color: transparent; }
+        
+        /* Mobile Optimizations */
+        @media (max-width: 640px) {
+            .timer-text { font-size: 4rem !important; }
+            .btn-group button { padding: 1rem 0.5rem !important; font-size: 0.8rem !important; }
+            .glass { padding: 1.25rem !important; }
+        }
+        
         body.light { background-color: #f1f5f9; color: #1e293b; }
         .light .glass { background: rgba(255, 255, 255, 0.98); border: 1px solid #e2e8f0; }
         .light .text-main { color: #0f172a; }
@@ -39,24 +47,26 @@
                 <p class="text-[10px] text-dim uppercase tracking-widest font-bold">Atom TONG Online Edition</p>
             </div>
             <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="p-2 text-dim hover:text-blue-500 transition-colors"><i class="fa-solid fa-house"></i></a>
                 <button id="themeToggle" class="p-2 rounded-full"><i id="themeIcon" class="fa-solid fa-moon text-slate-400"></i></button>
                 <div id="live-clock" class="text-xs font-mono text-dim"></div>
             </div>
         </header>
 
-        <div class="glass p-5 rounded-2xl shadow-sm mb-4">
+        <div class="glass p-5 rounded-3xl shadow-sm mb-4">
             <div class="grid grid-cols-2 gap-3 mb-4">
-                <input type="text" id="case-number" placeholder="案号" class="px-3 py-2 text-sm rounded-lg border border-slate-200 outline-none bg-slate-50/50">
-                <input type="text" id="work-content" placeholder="工作内容" class="px-3 py-2 text-sm rounded-lg border border-slate-200 outline-none bg-slate-50/50">
+                <input type="text" id="case-number" placeholder="案号" class="px-3 py-3 text-sm rounded-xl border border-slate-200 outline-none bg-slate-50/50">
+                <input type="text" id="work-content" placeholder="工作内容" class="px-3 py-3 text-sm rounded-xl border border-slate-200 outline-none bg-slate-50/50">
             </div>
             <div class="flex flex-col items-center">
-                <div id="display" class="text-5xl font-mono font-bold text-main mb-5">00:00:00</div>
-                <div class="flex flex-wrap justify-center gap-2 w-full">
-                    <button id="startBtn" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-blue-700 active:scale-95 transition-all">开始</button>
-                    <button id="pauseBtn" class="flex-1 bg-amber-500 text-white py-2.5 rounded-xl font-bold text-sm hidden hover:bg-amber-600 active:scale-95 transition-all">暂停</button>
-                    <button id="stopBtn" class="flex-1 bg-red-500 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-600 active:scale-95 transition-all">停止并保存</button>
-                    <button id="pomodoroBtn" class="flex-1 bg-indigo-50 text-indigo-600 py-2.5 rounded-xl font-bold border border-indigo-100 text-sm min-w-[120px] hover:bg-indigo-100 active:scale-95 transition-all">
-                        <i class="fa-solid fa-apple-whole mr-1"></i> <span id="pomo-text">番茄钟 (30m)</span>
+                <div id="display" class="text-5xl md:text-6xl font-mono font-bold text-main mb-6 timer-text">00:00:00</div>
+                <div class="flex flex-wrap justify-center gap-2 w-full btn-group">
+                    <button id="startBtn" class="flex-1 bg-blue-600 text-white py-3 rounded-2xl font-bold text-sm hover:bg-blue-700 active:scale-95 transition-all shadow-lg shadow-blue-500/20">开始</button>
+                    <button id="pauseBtn" class="flex-1 bg-amber-500 text-white py-3 rounded-2xl font-bold text-sm hidden hover:bg-amber-600 active:scale-95 transition-all shadow-lg shadow-amber-500/20">暂停</button>
+                    <button id="stopBtn" class="flex-1 bg-red-500 text-white py-3 rounded-2xl font-bold text-sm hover:bg-red-600 active:scale-95 transition-all shadow-lg shadow-red-500/20">停止保存</button>
+                    <button id="pomodoroBtn" class="flex-1 bg-indigo-50 text-indigo-600 py-3 rounded-2xl font-bold border border-indigo-100 text-sm min-w-[120px] hover:bg-indigo-100 active:scale-95 transition-all">
+                        <i class="fa-solid fa-apple-whole mr-1"></i> <span id="pomo-text">番茄钟</span>
                     </button>
                 </div>
             </div>
