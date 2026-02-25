@@ -2,128 +2,160 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brain-Burn Meter (Cloud) - Atom TONG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Brain-Burn Meter 🔥</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; transition: all 0.3s; -webkit-tap-highlight-color: transparent; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@700&display=swap');
+        body { font-family: 'Inter', sans-serif; transition: all 0.3s; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
+        .timer-font { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.05em; }
         
-        /* Mobile Optimizations */
-        @media (max-width: 640px) {
-            .timer-text { font-size: 4rem !important; }
-            .btn-group button { padding: 1rem 0.5rem !important; font-size: 0.8rem !important; }
-            .glass { padding: 1.25rem !important; }
-        }
+        /* Glassmorphism Refined */
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .dark .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
         
-        body.light { background-color: #f1f5f9; color: #1e293b; }
-        .light .glass { background: rgba(255, 255, 255, 0.98); border: 1px solid #e2e8f0; }
-        .light .text-main { color: #0f172a; }
-        .light .text-dim { color: #64748b; }
-        .light .bg-sub { background-color: #f8fafc; }
-        body.dark { background-color: #0f172a; color: #f1f5f9; }
-        .dark .glass { background: rgba(30, 41, 59, 0.95); border: 1px solid #334155; }
-        .dark .text-main { color: #f8fafc; }
-        .dark .text-dim { color: #94a3b8; }
-        .dark .bg-sub { background-color: #1e293b; }
-        .dark input { background-color: #1e293b !important; color: white !important; border-color: #334155 !important; }
-        .dark #display { color: #38bdf8; }
-        .dark thead { background-color: #1e293b !important; }
-        .dark tr:hover { background-color: #334155 !important; }
-        @keyframes pulse-red { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(239, 68, 68, 0.2); } }
+        /* Mobile App Feel */
+        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+        .safe-top { padding-top: env(safe-area-inset-top); }
+        
+        @keyframes pulse-red { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(239, 68, 68, 0.15); } }
         .pomodoro-end { animation: pulse-red 1s infinite; }
+        
+        input::placeholder { color: #94a3b8; font-weight: 400; }
+        .dark input { color: white; }
+        
+        /* Hide scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Button Glows */
+        .btn-active-blue { box-shadow: 0 0 20px rgba(37, 99, 235, 0.3); }
+        .btn-active-pomo { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
     </style>
 </head>
-<body class="p-4 flex flex-col items-center light">
-    <div class="w-full max-w-2xl">
-        <header class="flex justify-between items-end mb-4 px-2">
-            <div>
-                <h1 class="text-xl font-bold text-main flex items-center gap-2">
-                    <i class="fa-solid fa-cloud text-blue-500"></i>
-                    脑力计费器 (Cloud)
-                </h1>
-                <p class="text-[10px] text-dim uppercase tracking-widest font-bold">Atom TONG Online Edition</p>
-            </div>
-            <div class="flex items-center gap-4">
-            <div class="flex items-center gap-4">
-                <a href="index.html" class="p-2 text-dim hover:text-blue-500 transition-colors"><i class="fa-solid fa-house"></i></a>
-                <button id="themeToggle" class="p-2 rounded-full"><i id="themeIcon" class="fa-solid fa-moon text-slate-400"></i></button>
-                <div id="live-clock" class="text-xs font-mono text-dim"></div>
-            </div>
-        </header>
+<body class="light bg-slate-50 dark:bg-slate-900 min-h-screen flex flex-col no-scrollbar">
 
-        <div class="glass p-5 rounded-3xl shadow-sm mb-4">
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <input type="text" id="case-number" placeholder="案号" class="px-3 py-3 text-sm rounded-xl border border-slate-200 outline-none bg-slate-50/50">
-                <input type="text" id="work-content" placeholder="工作内容" class="px-3 py-3 text-sm rounded-xl border border-slate-200 outline-none bg-slate-50/50">
+    <!-- Top Navigation Bar -->
+    <nav class="safe-top sticky top-0 z-50 flex justify-between items-center px-6 py-4 glass shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/30">
+                <i class="fa-solid fa-fire-flame-curved text-white text-sm"></i>
             </div>
-            <div class="flex flex-col items-center">
-                <div id="display" class="text-5xl md:text-6xl font-mono font-bold text-main mb-6 timer-text">00:00:00</div>
-                <div class="flex flex-wrap justify-center gap-2 w-full btn-group">
-                    <button id="startBtn" class="flex-1 bg-blue-600 text-white py-3 rounded-2xl font-bold text-sm hover:bg-blue-700 active:scale-95 transition-all shadow-lg shadow-blue-500/20">开始</button>
-                    <button id="pauseBtn" class="flex-1 bg-amber-500 text-white py-3 rounded-2xl font-bold text-sm hidden hover:bg-amber-600 active:scale-95 transition-all shadow-lg shadow-amber-500/20">暂停</button>
-                    <button id="stopBtn" class="flex-1 bg-red-500 text-white py-3 rounded-2xl font-bold text-sm hover:bg-red-600 active:scale-95 transition-all shadow-lg shadow-red-500/20">停止保存</button>
-                    <button id="pomodoroBtn" class="flex-1 bg-indigo-50 text-indigo-600 py-3 rounded-2xl font-bold border border-indigo-100 text-sm min-w-[120px] hover:bg-indigo-100 active:scale-95 transition-all">
-                        <i class="fa-solid fa-apple-whole mr-1"></i> <span id="pomo-text">番茄钟</span>
-                    </button>
+            <span class="font-bold text-slate-900 dark:text-white tracking-tight">Brain-Burn</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button id="themeToggle" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 transition-all">
+                <i id="themeIcon" class="fa-solid fa-moon"></i>
+            </button>
+            <a href="index.html" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                <i class="fa-solid fa-house"></i>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-5 max-w-lg mx-auto w-full space-y-6">
+        
+        <!-- Timer Section (Hero) -->
+        <section class="relative py-10 flex flex-col items-center justify-center">
+            <div id="live-clock" class="absolute top-0 text-[10px] font-mono text-slate-400 dark:text-slate-600 tracking-widest uppercase">2026-02-25 02:22:00</div>
+            
+            <div id="display" class="timer-font text-[5.5rem] font-bold text-slate-900 dark:text-blue-400 drop-shadow-sm leading-none transition-all">00:00:00</div>
+            
+            <div class="mt-4 flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                <i class="fa-solid fa-bolt-lightning animate-pulse"></i>
+                Atom TONG Edition
+            </div>
+        </section>
+
+        <!-- Input Section (Stacked for Mobile) -->
+        <section class="space-y-3">
+            <div class="relative">
+                <i class="fa-solid fa-folder-open absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="case-number" placeholder="输入案件编号..." class="w-full pl-10 pr-4 py-4 rounded-2xl border-none ring-1 ring-slate-200 dark:ring-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-semibold">
+            </div>
+            <div class="relative">
+                <i class="fa-solid fa-pen-nib absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="work-content" placeholder="正在做什么工作..." class="w-full pl-10 pr-4 py-4 rounded-2xl border-none ring-1 ring-slate-200 dark:ring-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-semibold">
+            </div>
+        </section>
+
+        <!-- Action Grid -->
+        <section class="grid grid-cols-2 gap-3">
+            <button id="startBtn" class="flex flex-col items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-3xl font-bold shadow-xl shadow-blue-600/20 active:scale-95 transition-all">
+                <i class="fa-solid fa-play text-xl"></i>
+                <span class="text-xs uppercase tracking-wider">开始任务</span>
+            </button>
+            <button id="pauseBtn" class="hidden flex flex-col items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white py-5 rounded-3xl font-bold shadow-xl shadow-amber-500/20 active:scale-95 transition-all">
+                <i class="fa-solid fa-pause text-xl"></i>
+                <span class="text-xs uppercase tracking-wider">暂时离开</span>
+            </button>
+            <button id="stopBtn" class="flex flex-col items-center justify-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-5 rounded-3xl font-bold shadow-xl active:scale-95 transition-all">
+                <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+                <span class="text-xs uppercase tracking-wider">停止保存</span>
+            </button>
+            <button id="pomodoroBtn" class="col-span-2 flex items-center justify-center gap-3 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 py-4 rounded-2xl font-bold border border-indigo-100 dark:border-indigo-900/50 active:scale-95 transition-all">
+                <i class="fa-solid fa-apple-whole text-lg"></i>
+                <span id="pomo-text" class="text-sm font-bold uppercase tracking-widest">启动番茄专注 (30m)</span>
+            </button>
+        </section>
+
+        <!-- Dynamic Stats Widgets -->
+        <section class="grid grid-cols-2 gap-3">
+            <div class="glass p-4 rounded-3xl flex flex-col items-start gap-1">
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">本周消耗脑力</span>
+                <div class="flex items-baseline gap-1">
+                    <span id="weekly-total" class="text-xl font-bold text-slate-900 dark:text-white">0.0</span>
+                    <span class="text-[10px] text-slate-400 font-bold">H</span>
                 </div>
             </div>
-        </div>
-
-        <!-- Quick Stats (Added) -->
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="glass p-3 rounded-xl card flex justify-between items-center shadow-sm">
-                <span class="text-[10px] font-bold text-dim uppercase">本周</span>
-                <span id="weekly-total" class="font-bold text-main text-sm">0.0 h</span>
-            </div>
-            <div class="glass p-3 rounded-xl card flex justify-between items-center shadow-sm">
-                <span class="text-[10px] font-bold text-dim uppercase">本月</span>
-                <span id="monthly-total" class="font-bold text-main text-sm">0.0 h</span>
-            </div>
-        </div>
-
-        <!-- History -->
-        <div class="glass rounded-2xl shadow-sm overflow-hidden mb-8">
-            <div class="px-4 py-3 border-b border-slate-50 flex justify-between items-center bg-sub">
-                <div class="flex items-center gap-4">
-                    <h2 class="text-sm font-bold text-main">云端历史记录</h2>
-                    <input type="text" id="historySearch" placeholder="搜索案号..." class="px-3 py-1 text-[10px] rounded-full border border-slate-200 outline-none focus:ring-1 focus:ring-blue-500 bg-white/50 w-32">
+            <div class="glass p-4 rounded-3xl flex flex-col items-start gap-1">
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">本月智力产出</span>
+                <div class="flex items-baseline gap-1">
+                    <span id="monthly-total" class="text-xl font-bold text-slate-900 dark:text-white">0.0</span>
+                    <span class="text-[10px] text-slate-400 font-bold">H</span>
                 </div>
-                <span class="text-[10px] text-orange-500 font-bold tracking-widest">SYNC ENABLED</span>
             </div>
-            <div class="max-h-60 overflow-y-auto">
-                <table class="w-full text-left text-xs">
-                    <thead>
-                        <tr class="text-slate-400 font-bold uppercase">
-                            <th class="px-4 py-2">日期</th>
-                            <th class="px-4 py-2">案号</th>
-                            <th class="px-4 py-2">内容</th>
-                            <th class="px-4 py-2 text-right">工时</th>
-                            <th class="px-4 py-2 text-center">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-body" class="divide-y divide-slate-50"></tbody>
-                </table>
+        </section>
+
+        <!-- Mobile-first Records List -->
+        <section class="space-y-4 pb-20">
+            <div class="flex justify-between items-center px-1">
+                <h2 class="text-sm font-bold text-slate-900 dark:text-white">最近记录</h2>
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]"></i>
+                    <input type="text" id="historySearch" placeholder="搜索案号..." class="pl-8 pr-3 py-1.5 bg-slate-200/50 dark:bg-slate-800 text-[10px] rounded-full outline-none focus:ring-1 focus:ring-blue-500 w-28 font-medium">
+                </div>
             </div>
-            <div id="showAllContainer" class="px-4 py-2 text-center bg-slate-50/50 border-t border-slate-50 hidden">
-                <button id="showAllBtn" class="text-[10px] font-bold text-slate-400 hover:text-blue-500 transition-colors">显示全部记录</button>
+            
+            <div id="history-list" class="space-y-2">
+                <!-- Mobile List Items Template -->
             </div>
-        </div>
-    </div>
+
+            <div id="showAllContainer" class="hidden">
+                <button id="showAllBtn" class="w-full py-3 text-[11px] font-bold text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">查看更多历史</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Copyright -->
+    <footer class="text-center py-6 text-[10px] text-slate-400 safe-bottom">
+        &copy; 2026 ATOM TONG 版权所有 · PI POWERED
+    </footer>
 
     <script>
-        // Supabase Init (Atom: Configured)
         const SUPABASE_URL = 'https://ghbmmnapyupusmyxjkvv.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_MkMhoECq7wo5qFi3K9Shcg_7LiPM1oU';
-        
-        // Use a different variable name to avoid conflict with global 'supabase' from CDN
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let startTime, elapsedTime = 0, timerInterval;
         let pomoInterval, pomoRemaining = 0, isPomoRunning = false;
         let history = [];
+        let showAll = false;
 
         const display = document.getElementById('display');
         const startBtn = document.getElementById('startBtn');
@@ -131,22 +163,15 @@
         const stopBtn = document.getElementById('stopBtn');
         const pomoBtn = document.getElementById('pomodoroBtn');
         const pomoText = document.getElementById('pomo-text');
+        const historyList = document.getElementById('history-list');
         const historySearch = document.getElementById('historySearch');
-        const showAllBtn = document.getElementById('showAllBtn');
-        let showAll = false;
 
         async function loadData() {
             try {
-                const { data, error } = await supabaseClient.from('workload_records').select('*').order('timestamp', { ascending: false }).limit(showAll ? 1000 : 50);
-                if (error) throw error;
+                const { data, error } = await supabaseClient.from('workload_records').select('*').order('timestamp', { ascending: false }).limit(showAll ? 100 : 15);
                 if (data) { history = data; updateUI(); }
-            } catch (e) { 
-                console.error("Load failed", e);
-            }
+            } catch (e) { console.error(e); }
         }
-
-        historySearch.oninput = () => updateUI();
-        showAllBtn.onclick = () => { showAll = true; loadData(); };
 
         function formatTime(ms) {
             let h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000), s = Math.floor((ms%60000)/1000);
@@ -156,67 +181,37 @@
         startBtn.onclick = () => {
             if (timerInterval) return;
             startTime = Date.now() - elapsedTime;
-            timerInterval = setInterval(() => { 
-                elapsedTime = Date.now() - startTime; 
-                display.textContent = formatTime(elapsedTime); 
-            }, 100);
-            startBtn.classList.add('hidden'); 
-            pauseBtn.classList.remove('hidden');
+            timerInterval = setInterval(() => { elapsedTime = Date.now() - startTime; display.textContent = formatTime(elapsedTime); }, 100);
+            startBtn.classList.add('hidden'); pauseBtn.classList.remove('hidden');
             if (isPomoRunning && !pomoInterval) startPomoTicker();
         };
 
-        pauseBtn.onclick = () => { 
-            clearInterval(timerInterval); 
-            timerInterval = null; 
-            clearInterval(pomoInterval);
-            pomoInterval = null;
-            startBtn.classList.remove('hidden'); 
-            pauseBtn.classList.add('hidden'); 
-        };
+        pauseBtn.onclick = () => { clearInterval(timerInterval); timerInterval = null; clearInterval(pomoInterval); pomoInterval = null; startBtn.classList.remove('hidden'); pauseBtn.classList.add('hidden'); };
 
         stopBtn.onclick = async () => {
             if (elapsedTime === 0 && !isPomoRunning) return;
-            
-            clearInterval(timerInterval); timerInterval = null;
-            clearInterval(pomoInterval); pomoInterval = null;
+            clearInterval(timerInterval); timerInterval = null; clearInterval(pomoInterval); pomoInterval = null;
             
             const quarterHours = Math.max(1, Math.round((elapsedTime / 60000) / 15)) * 0.25;
             const record = {
                 timestamp: Date.now(),
                 date: new Date().toISOString().split('T')[0],
-                case_number: document.getElementById('case-number').value || "Online",
-                content: (isPomoRunning ? "[番茄钟] " : "") + (document.getElementById('work-content').value || "Web Work"),
+                case_number: document.getElementById('case-number').value || "MOBILE",
+                content: (isPomoRunning ? "[番茄] " : "") + (document.getElementById('work-content').value || "未定义任务"),
                 duration_hours: quarterHours
             };
 
             const { error } = await supabaseClient.from('workload_records').insert([record]);
-            if (error) {
-                console.error("Save failed", error);
-                alert("保存失败: " + error.message + "\n可能是由于 Supabase RLS 策略未开启允许插入。");
-            } else {
-                history.unshift(record); 
-                updateUI(); 
-            }
+            if (!error) { history.unshift(record); updateUI(); }
             
-            elapsedTime = 0; 
-            display.textContent = "00:00:00";
-            isPomoRunning = false;
-            pomoText.textContent = "番茄钟 (30m)";
-            startBtn.classList.remove('hidden');
-            pauseBtn.classList.add('hidden');
+            elapsedTime = 0; display.textContent = "00:00:00";
+            isPomoRunning = false; pomoText.textContent = "启动番茄专注 (30m)";
+            startBtn.classList.remove('hidden'); pauseBtn.classList.add('hidden');
         };
 
         pomoBtn.onclick = () => {
-            if (isPomoRunning) { 
-                clearInterval(pomoInterval); pomoInterval = null; 
-                isPomoRunning = false; 
-                pomoText.textContent = "番茄钟 (30m)"; 
-                return; 
-            }
-            pomoRemaining = 30 * 60;
-            isPomoRunning = true;
-            startPomoTicker();
-            startBtn.onclick();
+            if (isPomoRunning) { clearInterval(pomoInterval); pomoInterval = null; isPomoRunning = false; pomoText.textContent = "启动番茄专注 (30m)"; return; }
+            pomoRemaining = 30 * 60; isPomoRunning = true; startPomoTicker(); startBtn.onclick();
         };
 
         function startPomoTicker() {
@@ -224,11 +219,10 @@
             pomoInterval = setInterval(() => {
                 pomoRemaining--;
                 let m = Math.floor(pomoRemaining / 60), s = pomoRemaining % 60;
-                pomoText.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+                pomoText.textContent = `专注中: ${m}:${s.toString().padStart(2,'0')}`;
                 if (pomoRemaining <= 0) {
-                    clearInterval(pomoInterval); pomoInterval = null;
-                    isPomoRunning = false;
-                    pomoText.textContent = "DONE! 🍎";
+                    clearInterval(pomoInterval); pomoInterval = null; isPomoRunning = false;
+                    pomoText.textContent = "专注完成! 🍎";
                     document.body.classList.add('pomodoro-end');
                     setTimeout(() => document.body.classList.remove('pomodoro-end'), 5000);
                 }
@@ -236,89 +230,45 @@
         }
 
         function updateUI() {
-            const body = document.getElementById('history-body');
+            historyList.innerHTML = '';
             const searchTerm = historySearch.value.toLowerCase();
-            body.innerHTML = '';
-            
             let week = 0, month = 0, now = new Date();
             let startW = new Date(now.setDate(now.getDate() - now.getDay())).toISOString().split('T')[0];
             let startM = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
 
-            let filtered = history.filter(r => 
-                (r.case_number || "").toLowerCase().includes(searchTerm) || 
-                (r.content || "").toLowerCase().includes(searchTerm)
-            );
-
-            const displayLimit = 15;
-            if (!showAll && filtered.length > displayLimit) {
-                document.getElementById('showAllContainer').classList.remove('hidden');
-                filtered = filtered.slice(0, displayLimit);
-            } else {
-                document.getElementById('showAllContainer').classList.add('hidden');
-            }
-
-            filtered.forEach(r => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors";
-                tr.innerHTML = `
-                    <td class="px-4 py-2 text-dim">${r.date}</td>
-                    <td class="px-4 py-2 font-bold text-blue-500">${r.case_number}</td>
-                    <td class="px-4 py-2 text-dim truncate max-w-[120px]">${r.content || '-'}</td>
-                    <td class="px-4 py-2 text-right font-mono font-bold text-main">${r.duration_hours.toFixed(2)}</td>
-                    <td class="px-4 py-2 text-center">
-                        <div class="flex justify-center gap-2">
-                            <button onclick="editRec(${r.timestamp})" class="text-slate-300 hover:text-blue-500"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="delRec(${r.timestamp})" class="text-slate-300 hover:text-red-500"><i class="fa-solid fa-trash"></i></button>
+            history.filter(r => (r.case_number||"").toLowerCase().includes(searchTerm)).forEach(r => {
+                const item = document.createElement('div');
+                item.className = "glass p-4 rounded-2xl flex justify-between items-center";
+                item.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="text-[9px] text-slate-400 font-bold uppercase">${r.date}</span>
+                        <span class="text-sm font-bold text-blue-600 dark:text-blue-400">${r.case_number}</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1">${r.content || ''}</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-right">
+                            <span class="text-sm font-bold dark:text-white">${r.duration_hours.toFixed(2)}</span>
+                            <span class="text-[9px] font-bold text-slate-400">H</span>
                         </div>
-                    </td>
+                        <button onclick="delRec(${r.timestamp})" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-300 hover:text-red-500 transition-colors">
+                            <i class="fa-solid fa-trash-can text-[10px]"></i>
+                        </button>
+                    </div>
                 `;
-                body.appendChild(tr);
-            });
-
-            // Stats use full local cache
-            history.forEach(r => {
+                historyList.appendChild(item);
                 if (r.date >= startW) week += r.duration_hours;
                 if (r.date >= startM) month += r.duration_hours;
             });
-            
-            document.getElementById('weekly-total').textContent = week.toFixed(1) + ' h';
-            document.getElementById('monthly-total').textContent = month.toFixed(1) + ' h';
+            document.getElementById('weekly-total').textContent = week.toFixed(1);
+            document.getElementById('monthly-total').textContent = month.toFixed(1);
         }
 
-        window.editRec = async (ts) => {
-            const r = history.find(i => i.timestamp === ts);
-            const nCase = prompt("修改案号:", r.case_number);
-            const nCont = prompt("修改内容:", r.content);
-            const nTime = prompt("修改工时 (小时):", r.duration_hours);
-            
-            if (nCase !== null && nCont !== null && nTime !== null) {
-                const { error } = await supabaseClient.from('workload_records')
-                    .update({ case_number: nCase, content: nCont, duration_hours: parseFloat(nTime) })
-                    .eq('timestamp', ts);
-                
-                if (error) {
-                    alert("更新失败: " + error.message);
-                } else {
-                    r.case_number = nCase;
-                    r.content = nCont;
-                    r.duration_hours = parseFloat(nTime);
-                    updateUI();
-                }
-            }
-        };
-
         window.delRec = async (ts) => {
-            if (!confirm("确定要删除这条云端记录吗？")) return;
+            if (!confirm("删除记录?")) return;
             const { error } = await supabaseClient.from('workload_records').delete().eq('timestamp', ts);
-            if (error) {
-                alert("删除失败: " + error.message);
-            } else {
-                history = history.filter(i => i.timestamp !== ts);
-                updateUI();
-            }
+            if (!error) { history = history.filter(i => i.timestamp !== ts); updateUI(); }
         };
 
-        // Theme Toggle
         const themeBtn = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         themeBtn.onclick = () => {
@@ -330,6 +280,7 @@
         };
         if (localStorage.getItem('web_theme') === 'dark') themeBtn.onclick();
 
+        historySearch.oninput = () => updateUI();
         setInterval(() => document.getElementById('live-clock').textContent = new Date().toLocaleString(), 1000);
         loadData();
     </script>
