@@ -104,8 +104,15 @@
         async function loadData() {
             try {
                 const { data, error } = await supabaseClient.from('workload_records').select('*').order('timestamp', { ascending: false }).limit(20);
+                if (error) throw error;
                 if (data) { history = data; updateUI(); }
-            } catch (e) { console.error("Load failed", e); }
+            } catch (e) { 
+                console.error("Load failed", e);
+                // Only alert if it's a real connection error, not just empty
+                if (e.message && e.message !== "Unexpected end of JSON input") {
+                    alert("云端加载失败: " + e.message + "\n请检查 Supabase 表名和 RLS 设置。");
+                }
+            }
         }
 
         function formatTime(ms) {
@@ -150,7 +157,13 @@
             };
 
             const { error } = await supabaseClient.from('workload_records').insert([record]);
-            if (!error) { history.unshift(record); updateUI(); }
+            if (error) {
+                console.error("Save failed", error);
+                alert("保存失败: " + error.message + "\n可能是由于 Supabase RLS 策略未开启允许插入。");
+            } else {
+                history.unshift(record); 
+                updateUI(); 
+            }
             
             elapsedTime = 0; 
             display.textContent = "00:00:00";
