@@ -243,7 +243,12 @@
             };
 
             const { error } = await supabaseClient.from('workload_records').insert([record]);
-            if (!error) { history.unshift(record); updateUI(); }
+            if (!error) { 
+                history.unshift(record); 
+                document.getElementById('case-number').value = "";
+                document.getElementById('work-content').value = "";
+                updateUI(); 
+            }
             
             elapsedTime = 0; 
             updateDisplay(0);
