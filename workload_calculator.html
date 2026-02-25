@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain-Burn Meter (Cloud) - Atom TONG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; transition: all 0.3s; }
+        body.light { background-color: #f1f5f9; color: #1e293b; }
+        .light .glass { background: rgba(255, 255, 255, 0.98); border: 1px solid #e2e8f0; }
+        .light .text-main { color: #0f172a; }
+        .light .text-dim { color: #64748b; }
+        .light .bg-sub { background-color: #f8fafc; }
+        body.dark { background-color: #0f172a; color: #f1f5f9; }
+        .dark .glass { background: rgba(30, 41, 59, 0.95); border: 1px solid #334155; }
+        .dark .text-main { color: #f8fafc; }
+        .dark .text-dim { color: #94a3b8; }
+        .dark .bg-sub { background-color: #1e293b; }
+        .dark input { background-color: #1e293b !important; color: white; border-color: #334155 !important; }
+        .dark #display { color: #38bdf8; }
+        .dark thead { background-color: #1e293b !important; }
+        .dark tr:hover { background-color: #334155 !important; }
+        @keyframes pulse-red { 0%, 100% { } 50% { background-color: rgba(239, 68, 68, 0.2); } }
+        .pomodoro-end { animation: pulse-red 1s infinite; }
+    </style>
+</head>
+<body class="p-4 flex flex-col items-center light">
+    <div class="w-full max-w-2xl">
+        <header class="flex justify-between items-end mb-4 px-2">
+            <div>
+                <h1 class="text-xl font-bold text-main flex items-center gap-2">
+                    <i class="fa-solid fa-cloud text-blue-500"></i>
+                    脑力计费器 (Cloud)
+                </h1>
+                <p class="text-[10px] text-dim uppercase tracking-widest font-bold">Atom TONG Online Edition</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="themeToggle" class="p-2 rounded-full"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+                <div id="live-clock" class="text-xs font-mono text-dim"></div>
+            </div>
+        </header>
+
+        <div class="glass p-5 rounded-2xl shadow-sm mb-4">
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <input type="text" id="case-number" placeholder="案号" class="px-3 py-2 text-sm rounded-lg border border-slate-200 outline-none">
+                <input type="text" id="work-content" placeholder="工作内容" class="px-3 py-2 text-sm rounded-lg border border-slate-200 outline-none">
+            </div>
+            <div class="flex flex-col items-center">
+                <div id="display" class="text-5xl font-mono font-bold text-main mb-5">00:00:00</div>
+                <div class="flex flex-wrap justify-center gap-2 w-full">
+                    <button id="startBtn" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-bold text-sm">开始</button>
+                    <button id="pauseBtn" class="flex-1 bg-amber-500 text-white py-2.5 rounded-xl font-bold text-sm hidden">暂停</button>
+                    <button id="stopBtn" class="flex-1 bg-red-500 text-white py-2.5 rounded-xl font-bold text-sm">停止并保存</button>
+                    <button id="pomodoroBtn" class="flex-1 bg-indigo-50 text-indigo-600 py-2.5 rounded-xl font-bold border border-indigo-100 text-sm min-w-[120px]">番茄钟 (30m)</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass rounded-2xl shadow-sm overflow-hidden mb-8">
+            <div class="px-4 py-3 border-b border-slate-50 flex justify-between items-center bg-sub">
+                <h2 class="text-sm font-bold text-main">云端历史记录</h2>
+                <span class="text-[10px] text-orange-500 font-bold">SYNC ENABLED</span>
+            </div>
+            <div class="max-h-60 overflow-y-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="text-slate-400 font-bold uppercase">
+                            <th class="px-4 py-2">日期</th>
+                            <th class="px-4 py-2">案号</th>
+                            <th class="px-4 py-2 text-right">工时</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body" class="divide-y divide-slate-50"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase Init (Atom: Configured)
+        const SUPABASE_URL = 'https://ghbmmnapyupusmyxjkvv.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_MkMhoECq7wo5qFi3K9Shcg_7LiPM1oU';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let startTime, elapsedTime = 0, timerInterval;
+        let pomoInterval, pomoRemaining = 0, isPomoRunning = false;
+        let history = [];
+
+        const display = document.getElementById('display');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const pomoBtn = document.getElementById('pomodoroBtn');
+
+        async function loadData() {
+            const { data, error } = await supabase.from('workload_records').select('*').order('timestamp', { ascending: false }).limit(20);
+            if (data) { history = data; updateUI(); }
+        }
+
+        function formatTime(ms) {
+            let h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000), s = Math.floor((ms%60000)/1000);
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+
+        startBtn.onclick = () => {
+            if (timerInterval) return;
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(() => { elapsedTime = Date.now() - startTime; display.textContent = formatTime(elapsedTime); }, 100);
+            startBtn.classList.add('hidden'); pauseBtn.classList.remove('hidden');
+        };
+
+        pauseBtn.onclick = () => { clearInterval(timerInterval); timerInterval = null; startBtn.classList.remove('hidden'); pauseBtn.classList.add('hidden'); };
+
+        stopBtn.onclick = async () => {
+            if (elapsedTime === 0) return;
+            const quarterHours = Math.max(1, Math.round((elapsedTime / 60000) / 15)) * 0.25;
+            const record = {
+                timestamp: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                case_number: document.getElementById('case-number').value || "Online",
+                content: document.getElementById('work-content').value || "Web Work",
+                duration_hours: quarterHours
+            };
+            const { error } = await supabase.from('workload_records').insert([record]);
+            if (!error) { history.unshift(record); updateUI(); }
+            elapsedTime = 0; display.textContent = "00:00:00";
+            pauseBtn.onclick();
+        };
+
+        function updateUI() {
+            const body = document.getElementById('history-body');
+            body.innerHTML = '';
+            history.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td class="px-4 py-2 text-dim">${r.date}</td><td class="px-4 py-2 font-bold text-blue-500">${r.case_number}</td><td class="px-4 py-2 text-right font-mono font-bold text-main">${r.duration_hours.toFixed(2)}</td>`;
+                body.appendChild(tr);
+            });
+        }
+
+        // Theme Toggle (Simplified)
+        const themeBtn = document.getElementById('themeToggle');
+        themeBtn.onclick = () => {
+            const isDark = document.body.classList.contains('dark');
+            document.body.classList.toggle('dark', !isDark);
+            document.body.classList.toggle('light', isDark);
+            localStorage.setItem('web_theme', !isDark ? 'dark' : 'light');
+        };
+        if (localStorage.getItem('web_theme') === 'dark') themeBtn.onclick();
+
+        setInterval(() => document.getElementById('live-clock').textContent = new Date().toLocaleString(), 1000);
+        loadData();
+    </script>
+</body>
+</html>
