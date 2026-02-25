@@ -20,11 +20,11 @@
         .dark .text-main { color: #f8fafc; }
         .dark .text-dim { color: #94a3b8; }
         .dark .bg-sub { background-color: #1e293b; }
-        .dark input { background-color: #1e293b !important; color: white; border-color: #334155 !important; }
+        .dark input { background-color: #1e293b !important; color: white !important; border-color: #334155 !important; }
         .dark #display { color: #38bdf8; }
         .dark thead { background-color: #1e293b !important; }
         .dark tr:hover { background-color: #334155 !important; }
-        @keyframes pulse-red { 0%, 100% { } 50% { background-color: rgba(239, 68, 68, 0.2); } }
+        @keyframes pulse-red { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(239, 68, 68, 0.2); } }
         .pomodoro-end { animation: pulse-red 1s infinite; }
     </style>
 </head>
@@ -39,23 +39,25 @@
                 <p class="text-[10px] text-dim uppercase tracking-widest font-bold">Atom TONG Online Edition</p>
             </div>
             <div class="flex items-center gap-4">
-                <button id="themeToggle" class="p-2 rounded-full"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+                <button id="themeToggle" class="p-2 rounded-full"><i id="themeIcon" class="fa-solid fa-moon text-slate-400"></i></button>
                 <div id="live-clock" class="text-xs font-mono text-dim"></div>
             </div>
         </header>
 
         <div class="glass p-5 rounded-2xl shadow-sm mb-4">
             <div class="grid grid-cols-2 gap-3 mb-4">
-                <input type="text" id="case-number" placeholder="案号" class="px-3 py-2 text-sm rounded-lg border border-slate-200 outline-none">
-                <input type="text" id="work-content" placeholder="工作内容" class="px-3 py-2 text-sm rounded-lg border border-slate-200 outline-none">
+                <input type="text" id="case-number" placeholder="案号" class="px-3 py-2 text-sm rounded-lg border border-slate-200 outline-none bg-slate-50/50">
+                <input type="text" id="work-content" placeholder="工作内容" class="px-3 py-2 text-sm rounded-lg border border-slate-200 outline-none bg-slate-50/50">
             </div>
             <div class="flex flex-col items-center">
                 <div id="display" class="text-5xl font-mono font-bold text-main mb-5">00:00:00</div>
                 <div class="flex flex-wrap justify-center gap-2 w-full">
-                    <button id="startBtn" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-bold text-sm">开始</button>
-                    <button id="pauseBtn" class="flex-1 bg-amber-500 text-white py-2.5 rounded-xl font-bold text-sm hidden">暂停</button>
-                    <button id="stopBtn" class="flex-1 bg-red-500 text-white py-2.5 rounded-xl font-bold text-sm">停止并保存</button>
-                    <button id="pomodoroBtn" class="flex-1 bg-indigo-50 text-indigo-600 py-2.5 rounded-xl font-bold border border-indigo-100 text-sm min-w-[120px]">番茄钟 (30m)</button>
+                    <button id="startBtn" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-blue-700 active:scale-95 transition-all">开始</button>
+                    <button id="pauseBtn" class="flex-1 bg-amber-500 text-white py-2.5 rounded-xl font-bold text-sm hidden hover:bg-amber-600 active:scale-95 transition-all">暂停</button>
+                    <button id="stopBtn" class="flex-1 bg-red-500 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-red-600 active:scale-95 transition-all">停止并保存</button>
+                    <button id="pomodoroBtn" class="flex-1 bg-indigo-50 text-indigo-600 py-2.5 rounded-xl font-bold border border-indigo-100 text-sm min-w-[120px] hover:bg-indigo-100 active:scale-95 transition-all">
+                        <i class="fa-solid fa-apple-whole mr-1"></i> <span id="pomo-text">番茄钟 (30m)</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -63,7 +65,7 @@
         <div class="glass rounded-2xl shadow-sm overflow-hidden mb-8">
             <div class="px-4 py-3 border-b border-slate-50 flex justify-between items-center bg-sub">
                 <h2 class="text-sm font-bold text-main">云端历史记录</h2>
-                <span class="text-[10px] text-orange-500 font-bold">SYNC ENABLED</span>
+                <span class="text-[10px] text-orange-500 font-bold tracking-widest">SYNC ENABLED</span>
             </div>
             <div class="max-h-60 overflow-y-auto">
                 <table class="w-full text-left text-xs">
@@ -84,7 +86,9 @@
         // Supabase Init (Atom: Configured)
         const SUPABASE_URL = 'https://ghbmmnapyupusmyxjkvv.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_MkMhoECq7wo5qFi3K9Shcg_7LiPM1oU';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Use a different variable name to avoid conflict with global 'supabase' from CDN
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let startTime, elapsedTime = 0, timerInterval;
         let pomoInterval, pomoRemaining = 0, isPomoRunning = false;
@@ -95,10 +99,13 @@
         const pauseBtn = document.getElementById('pauseBtn');
         const stopBtn = document.getElementById('stopBtn');
         const pomoBtn = document.getElementById('pomodoroBtn');
+        const pomoText = document.getElementById('pomo-text');
 
         async function loadData() {
-            const { data, error } = await supabase.from('workload_records').select('*').order('timestamp', { ascending: false }).limit(20);
-            if (data) { history = data; updateUI(); }
+            try {
+                const { data, error } = await supabaseClient.from('workload_records').select('*').order('timestamp', { ascending: false }).limit(20);
+                if (data) { history = data; updateUI(); }
+            } catch (e) { console.error("Load failed", e); }
         }
 
         function formatTime(ms) {
@@ -109,27 +116,78 @@
         startBtn.onclick = () => {
             if (timerInterval) return;
             startTime = Date.now() - elapsedTime;
-            timerInterval = setInterval(() => { elapsedTime = Date.now() - startTime; display.textContent = formatTime(elapsedTime); }, 100);
-            startBtn.classList.add('hidden'); pauseBtn.classList.remove('hidden');
+            timerInterval = setInterval(() => { 
+                elapsedTime = Date.now() - startTime; 
+                display.textContent = formatTime(elapsedTime); 
+            }, 100);
+            startBtn.classList.add('hidden'); 
+            pauseBtn.classList.remove('hidden');
+            if (isPomoRunning && !pomoInterval) startPomoTicker();
         };
 
-        pauseBtn.onclick = () => { clearInterval(timerInterval); timerInterval = null; startBtn.classList.remove('hidden'); pauseBtn.classList.add('hidden'); };
+        pauseBtn.onclick = () => { 
+            clearInterval(timerInterval); 
+            timerInterval = null; 
+            clearInterval(pomoInterval);
+            pomoInterval = null;
+            startBtn.classList.remove('hidden'); 
+            pauseBtn.classList.add('hidden'); 
+        };
 
         stopBtn.onclick = async () => {
-            if (elapsedTime === 0) return;
+            if (elapsedTime === 0 && !isPomoRunning) return;
+            
+            clearInterval(timerInterval); timerInterval = null;
+            clearInterval(pomoInterval); pomoInterval = null;
+            
             const quarterHours = Math.max(1, Math.round((elapsedTime / 60000) / 15)) * 0.25;
             const record = {
                 timestamp: Date.now(),
                 date: new Date().toISOString().split('T')[0],
                 case_number: document.getElementById('case-number').value || "Online",
-                content: document.getElementById('work-content').value || "Web Work",
+                content: (isPomoRunning ? "[番茄钟] " : "") + (document.getElementById('work-content').value || "Web Work"),
                 duration_hours: quarterHours
             };
-            const { error } = await supabase.from('workload_records').insert([record]);
+
+            const { error } = await supabaseClient.from('workload_records').insert([record]);
             if (!error) { history.unshift(record); updateUI(); }
-            elapsedTime = 0; display.textContent = "00:00:00";
-            pauseBtn.onclick();
+            
+            elapsedTime = 0; 
+            display.textContent = "00:00:00";
+            isPomoRunning = false;
+            pomoText.textContent = "番茄钟 (30m)";
+            startBtn.classList.remove('hidden');
+            pauseBtn.classList.add('hidden');
         };
+
+        pomoBtn.onclick = () => {
+            if (isPomoRunning) { 
+                clearInterval(pomoInterval); pomoInterval = null; 
+                isPomoRunning = false; 
+                pomoText.textContent = "番茄钟 (30m)"; 
+                return; 
+            }
+            pomoRemaining = 30 * 60;
+            isPomoRunning = true;
+            startPomoTicker();
+            startBtn.onclick();
+        };
+
+        function startPomoTicker() {
+            if (pomoInterval) clearInterval(pomoInterval);
+            pomoInterval = setInterval(() => {
+                pomoRemaining--;
+                let m = Math.floor(pomoRemaining / 60), s = pomoRemaining % 60;
+                pomoText.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+                if (pomoRemaining <= 0) {
+                    clearInterval(pomoInterval); pomoInterval = null;
+                    isPomoRunning = false;
+                    pomoText.textContent = "DONE! 🍎";
+                    document.body.classList.add('pomodoro-end');
+                    setTimeout(() => document.body.classList.remove('pomodoro-end'), 5000);
+                }
+            }, 1000);
+        }
 
         function updateUI() {
             const body = document.getElementById('history-body');
@@ -141,12 +199,14 @@
             });
         }
 
-        // Theme Toggle (Simplified)
+        // Theme Toggle
         const themeBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
         themeBtn.onclick = () => {
             const isDark = document.body.classList.contains('dark');
             document.body.classList.toggle('dark', !isDark);
             document.body.classList.toggle('light', isDark);
+            themeIcon.className = isDark ? 'fa-solid fa-moon text-slate-400' : 'fa-solid fa-sun text-yellow-400';
             localStorage.setItem('web_theme', !isDark ? 'dark' : 'light');
         };
         if (localStorage.getItem('web_theme') === 'dark') themeBtn.onclick();
