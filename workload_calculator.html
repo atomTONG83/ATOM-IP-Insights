@@ -36,8 +36,8 @@
             .record-content { font-size: 0.9rem !important; }
         }
 
-        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-        .safe-top { padding-top: env(safe-area-inset-top); }
+        .safe-bottom { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+        .safe-top { padding-top: calc(35px + env(safe-area-inset-top)); }
         @keyframes pulse-red { 0%, 100% { } 50% { background-color: rgba(239, 68, 68, 0.1); } }
         .pomodoro-end { animation: pulse-red 1s infinite; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
