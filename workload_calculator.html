@@ -11,30 +11,36 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@700&display=swap');
-        body { font-family: 'Inter', sans-serif; transition: all 0.3s; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
-        .timer-font { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.05em; }
+        body { font-family: 'Inter', sans-serif; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
+        .timer-font { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
         
-        /* Glassmorphism Refined */
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
-        .dark .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        /* Clear Mode Distinction */
+        body.light { background-color: #ffffff; color: #0f172a; }
+        .light .glass { background: rgba(248, 250, 252, 0.9); backdrop-filter: blur(10px); border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .light input { background-color: #f1f5f9 !important; color: #0f172a !important; border: 1px solid #e2e8f0 !important; }
+        .light #display { color: #1e293b; text-shadow: none; }
+        .light .stats-card { background: #f8fafc; border: 1px solid #e2e8f0; }
+
+        body.dark { background-color: #020617; color: #f8fafc; }
+        .dark .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .dark input { background-color: #1e293b !important; color: #ffffff !important; border: 1px solid #334155 !important; }
+        .dark #display { color: #38bdf8; text-shadow: 0 0 20px rgba(56, 189, 248, 0.3); }
+        .dark .stats-card { background: #0f172a; border: 1px solid #1e293b; }
         
-        /* Mobile App Feel */
+        /* Mobile App Scaling */
+        @media (max-width: 640px) {
+            #display { font-size: 5rem !important; }
+            input { font-size: 1.1rem !important; padding-top: 1.25rem !important; padding-bottom: 1.25rem !important; }
+            .btn-text { font-size: 0.9rem !important; }
+            .record-title { font-size: 1.1rem !important; }
+            .record-content { font-size: 0.9rem !important; }
+        }
+
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
         .safe-top { padding-top: env(safe-area-inset-top); }
-        
-        @keyframes pulse-red { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(239, 68, 68, 0.15); } }
+        @keyframes pulse-red { 0%, 100% { } 50% { background-color: rgba(239, 68, 68, 0.1); } }
         .pomodoro-end { animation: pulse-red 1s infinite; }
-        
-        input::placeholder { color: #94a3b8; font-weight: 400; }
-        .dark input { color: white; }
-        
-        /* Hide scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Button Glows */
-        .btn-active-blue { box-shadow: 0 0 20px rgba(37, 99, 235, 0.3); }
-        .btn-active-pomo { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
     </style>
 </head>
 <body class="light bg-slate-50 dark:bg-slate-900 min-h-screen flex flex-col no-scrollbar">
@@ -58,86 +64,83 @@
     </nav>
 
     <!-- Main Content Area -->
-    <main class="flex-1 p-5 max-w-lg mx-auto w-full space-y-6">
+    <main class="flex-1 p-5 max-w-lg mx-auto w-full space-y-8">
         
         <!-- Timer Section (Hero) -->
-        <section class="relative py-10 flex flex-col items-center justify-center">
-            <div id="live-clock" class="absolute top-0 text-[10px] font-mono text-slate-400 dark:text-slate-600 tracking-widest uppercase">2026-02-25 02:22:00</div>
+        <section class="relative py-8 flex flex-col items-center justify-center">
+            <div id="live-clock" class="absolute top-0 text-xs font-mono text-slate-400 dark:text-slate-500 tracking-widest uppercase">2026-02-25 02:22:00</div>
             
-            <div id="display" class="timer-font text-[5.5rem] font-bold text-slate-900 dark:text-blue-400 drop-shadow-sm leading-none transition-all">00:00:00</div>
+            <div id="display" class="timer-font text-[5rem] font-bold text-slate-900 dark:text-blue-400 leading-none transition-all">00:00:00</div>
             
-            <div class="mt-4 flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                <i class="fa-solid fa-bolt-lightning animate-pulse"></i>
-                Atom TONG Edition
+            <div class="mt-6 flex items-center gap-2 px-4 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold uppercase tracking-widest">
+                <i class="fa-solid fa-fire animate-pulse text-orange-500"></i>
+                Atom TONG Tactical
             </div>
         </section>
 
-        <!-- Input Section (Stacked for Mobile) -->
-        <section class="space-y-3">
+        <!-- Input Section -->
+        <section class="space-y-4">
             <div class="relative">
-                <i class="fa-solid fa-folder-open absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" id="case-number" placeholder="输入案件编号..." class="w-full pl-10 pr-4 py-4 rounded-2xl border-none ring-1 ring-slate-200 dark:ring-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-semibold">
+                <i class="fa-solid fa-folder-open absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" id="case-number" placeholder="案件编号 (Case #)" class="w-full pl-12 pr-4 py-5 rounded-3xl border-none ring-1 ring-slate-200 dark:ring-slate-800 bg-slate-50 dark:bg-slate-800 text-lg font-bold outline-none transition-all focus:ring-2 focus:ring-blue-500">
             </div>
             <div class="relative">
-                <i class="fa-solid fa-pen-nib absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" id="work-content" placeholder="正在做什么工作..." class="w-full pl-10 pr-4 py-4 rounded-2xl border-none ring-1 ring-slate-200 dark:ring-slate-800 bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-semibold">
+                <i class="fa-solid fa-pen-nib absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" id="work-content" placeholder="工作内容描述..." class="w-full pl-12 pr-4 py-5 rounded-3xl border-none ring-1 ring-slate-200 dark:ring-slate-800 bg-slate-50 dark:bg-slate-800 text-lg font-bold outline-none transition-all focus:ring-2 focus:ring-blue-500">
             </div>
         </section>
 
         <!-- Action Grid -->
-        <section class="grid grid-cols-2 gap-3">
-            <button id="startBtn" class="flex flex-col items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-3xl font-bold shadow-xl shadow-blue-600/20 active:scale-95 transition-all">
-                <i class="fa-solid fa-play text-xl"></i>
-                <span class="text-xs uppercase tracking-wider">开始任务</span>
+        <section class="grid grid-cols-2 gap-4">
+            <button id="startBtn" class="flex flex-col items-center justify-center gap-3 bg-blue-600 text-white py-6 rounded-[2rem] font-bold shadow-2xl shadow-blue-600/30 active:scale-90 transition-all">
+                <i class="fa-solid fa-play text-2xl"></i>
+                <span class="text-sm uppercase tracking-wider btn-text">开始计时</span>
             </button>
-            <button id="pauseBtn" class="hidden flex flex-col items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white py-5 rounded-3xl font-bold shadow-xl shadow-amber-500/20 active:scale-95 transition-all">
-                <i class="fa-solid fa-pause text-xl"></i>
-                <span class="text-xs uppercase tracking-wider">暂时离开</span>
+            <button id="pauseBtn" class="hidden flex flex-col items-center justify-center gap-3 bg-orange-500 text-white py-6 rounded-[2rem] font-bold shadow-2xl shadow-orange-500/30 active:scale-90 transition-all">
+                <i class="fa-solid fa-pause text-2xl"></i>
+                <span class="text-sm uppercase tracking-wider btn-text">暂时停止</span>
             </button>
-            <button id="stopBtn" class="flex flex-col items-center justify-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-5 rounded-3xl font-bold shadow-xl active:scale-95 transition-all">
-                <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
-                <span class="text-xs uppercase tracking-wider">停止保存</span>
+            <button id="stopBtn" class="flex flex-col items-center justify-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-6 rounded-[2rem] font-bold shadow-xl active:scale-90 transition-all">
+                <i class="fa-solid fa-cloud-check text-2xl"></i>
+                <span class="text-sm uppercase tracking-wider btn-text">结束保存</span>
             </button>
-            <button id="pomodoroBtn" class="col-span-2 flex items-center justify-center gap-3 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 py-4 rounded-2xl font-bold border border-indigo-100 dark:border-indigo-900/50 active:scale-95 transition-all">
-                <i class="fa-solid fa-apple-whole text-lg"></i>
-                <span id="pomo-text" class="text-sm font-bold uppercase tracking-widest">启动番茄专注 (30m)</span>
+            <button id="pomodoroBtn" class="col-span-2 flex items-center justify-center gap-4 bg-indigo-600 text-white py-5 rounded-3xl font-bold shadow-lg shadow-indigo-600/20 active:scale-95 transition-all">
+                <i class="fa-solid fa-clock text-xl"></i>
+                <span id="pomo-text" class="text-base font-bold uppercase tracking-widest">开启番茄专注 (30m)</span>
             </button>
         </section>
 
         <!-- Dynamic Stats Widgets -->
-        <section class="grid grid-cols-2 gap-3">
-            <div class="glass p-4 rounded-3xl flex flex-col items-start gap-1">
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">本周消耗脑力</span>
+        <section class="grid grid-cols-2 gap-4">
+            <div class="glass p-5 rounded-[2rem] flex flex-col items-start gap-1 shadow-sm stats-card">
+                <span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">本周工时</span>
                 <div class="flex items-baseline gap-1">
-                    <span id="weekly-total" class="text-xl font-bold text-slate-900 dark:text-white">0.0</span>
-                    <span class="text-[10px] text-slate-400 font-bold">H</span>
+                    <span id="weekly-total" class="text-3xl font-black text-slate-900 dark:text-white">0.0</span>
+                    <span class="text-xs text-slate-400 font-bold">H</span>
                 </div>
             </div>
-            <div class="glass p-4 rounded-3xl flex flex-col items-start gap-1">
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">本月智力产出</span>
+            <div class="glass p-5 rounded-[2rem] flex flex-col items-start gap-1 shadow-sm stats-card">
+                <span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">本月总计</span>
                 <div class="flex items-baseline gap-1">
-                    <span id="monthly-total" class="text-xl font-bold text-slate-900 dark:text-white">0.0</span>
-                    <span class="text-[10px] text-slate-400 font-bold">H</span>
+                    <span id="monthly-total" class="text-3xl font-black text-slate-900 dark:text-white">0.0</span>
+                    <span class="text-xs text-slate-400 font-bold">H</span>
                 </div>
             </div>
         </section>
 
         <!-- Mobile-first Records List -->
-        <section class="space-y-4 pb-20">
-            <div class="flex justify-between items-center px-1">
-                <h2 class="text-sm font-bold text-slate-900 dark:text-white">最近记录</h2>
+        <section class="space-y-5 pb-24">
+            <div class="flex justify-between items-center px-2">
+                <h2 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">最近记录</h2>
                 <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]"></i>
-                    <input type="text" id="historySearch" placeholder="搜索案号..." class="pl-8 pr-3 py-1.5 bg-slate-200/50 dark:bg-slate-800 text-[10px] rounded-full outline-none focus:ring-1 focus:ring-blue-500 w-28 font-medium">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="historySearch" placeholder="搜索..." class="pl-9 pr-4 py-2 bg-slate-200/50 dark:bg-slate-800 text-sm rounded-full outline-none focus:ring-2 focus:ring-blue-500 w-32 font-bold transition-all">
                 </div>
             </div>
             
-            <div id="history-list" class="space-y-2">
-                <!-- Mobile List Items Template -->
-            </div>
-
+            <div id="history-list" class="space-y-3"></div>
             <div id="showAllContainer" class="hidden">
-                <button id="showAllBtn" class="w-full py-3 text-[11px] font-bold text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">查看更多历史</button>
+                <button id="showAllBtn" class="w-full py-4 text-sm font-black text-slate-400 dark:text-slate-500 bg-slate-100/50 dark:bg-slate-800/30 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800">加载更早的历史记录</button>
             </div>
         </section>
     </main>
@@ -238,20 +241,20 @@
 
             history.filter(r => (r.case_number||"").toLowerCase().includes(searchTerm)).forEach(r => {
                 const item = document.createElement('div');
-                item.className = "glass p-4 rounded-2xl flex justify-between items-center";
+                item.className = "glass p-5 rounded-[2rem] flex justify-between items-center shadow-sm";
                 item.innerHTML = `
-                    <div class="flex flex-col">
-                        <span class="text-[9px] text-slate-400 font-bold uppercase">${r.date}</span>
-                        <span class="text-sm font-bold text-blue-600 dark:text-blue-400">${r.case_number}</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-1">${r.content || ''}</span>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[9px] text-slate-400 font-black uppercase tracking-wider">${r.date}</span>
+                        <span class="text-base font-black text-blue-600 dark:text-blue-400 record-title">${r.case_number}</span>
+                        <span class="text-xs text-slate-500 dark:text-slate-400 font-medium record-content line-clamp-1">${r.content || ''}</span>
                     </div>
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-5">
                         <div class="text-right">
-                            <span class="text-sm font-bold dark:text-white">${r.duration_hours.toFixed(2)}</span>
-                            <span class="text-[9px] font-bold text-slate-400">H</span>
+                            <span class="text-lg font-black dark:text-white">${r.duration_hours.toFixed(2)}</span>
+                            <span class="text-[9px] font-black text-slate-400">H</span>
                         </div>
-                        <button onclick="delRec(${r.timestamp})" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-300 hover:text-red-500 transition-colors">
-                            <i class="fa-solid fa-trash-can text-[10px]"></i>
+                        <button onclick="delRec(${r.timestamp})" class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-300 hover:text-red-500 transition-colors">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
                     </div>
                 `;
