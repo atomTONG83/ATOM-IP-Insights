@@ -34,7 +34,7 @@
         
         /* Mobile App Scaling */
         @media (max-width: 640px) {
-            #display { font-size: 3.8rem !important; }
+            #display { font-size: 5.8rem !important; }
             input { font-size: 1rem !important; padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
             .btn-text { font-size: 0.85rem !important; }
             .record-title { font-size: 1rem !important; }
@@ -46,6 +46,10 @@
         @keyframes pulse-red { 0%, 100% { } 50% { background-color: rgba(239, 68, 68, 0.1); } }
         .pomodoro-end { animation: pulse-red 1s infinite; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Blinking Colon when running */
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+        .running .colon { animation: blink 1s infinite; }
     </style>
 </head>
 <body class="light bg-slate-50 dark:bg-slate-900 min-h-screen flex flex-col no-scrollbar">
@@ -75,7 +79,9 @@
         <section class="relative py-6 flex flex-col items-center justify-center px-10">
             <div id="live-clock" class="absolute top-0 text-[10px] font-mono text-slate-400 dark:text-slate-500 tracking-widest uppercase">2026-02-25 02:22:00</div>
             
-            <div id="display" class="timer-font text-[4rem] font-black text-slate-900 dark:text-blue-400 leading-none transition-all tracking-tighter">00:00:00</div>
+            <div id="display" class="timer-font text-[4.5rem] font-black text-slate-900 dark:text-blue-400 leading-none transition-all tracking-tighter flex items-center">
+                <span>00</span><span class="colon mx-1">:</span><span>00</span>
+            </div>
             
             <div class="mt-6 flex items-center gap-2 px-4 py-1.5 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-widest">
                 <i class="fa-solid fa-fire animate-pulse text-orange-500"></i>
@@ -186,19 +192,37 @@
             return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
+        function updateDisplay(ms) {
+            let h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000);
+            display.innerHTML = `<span>${h.toString().padStart(2,'0')}</span><span class="colon mx-1">:</span><span>${m.toString().padStart(2,'0')}</span>`;
+        }
+
         startBtn.onclick = () => {
             if (timerInterval) return;
             startTime = Date.now() - elapsedTime;
-            timerInterval = setInterval(() => { elapsedTime = Date.now() - startTime; display.textContent = formatTime(elapsedTime); }, 100);
+            timerInterval = setInterval(() => { 
+                elapsedTime = Date.now() - startTime; 
+                updateDisplay(elapsedTime); 
+            }, 100);
+            display.classList.add('running');
             startBtn.classList.add('hidden'); pauseBtn.classList.remove('hidden');
             if (isPomoRunning && !pomoInterval) startPomoTicker();
         };
 
-        pauseBtn.onclick = () => { clearInterval(timerInterval); timerInterval = null; clearInterval(pomoInterval); pomoInterval = null; startBtn.classList.remove('hidden'); pauseBtn.classList.add('hidden'); };
+        pauseBtn.onclick = () => { 
+            clearInterval(timerInterval); 
+            timerInterval = null; 
+            clearInterval(pomoInterval); 
+            pomoInterval = null; 
+            display.classList.remove('running');
+            startBtn.classList.remove('hidden'); 
+            pauseBtn.classList.add('hidden'); 
+        };
 
         stopBtn.onclick = async () => {
             if (elapsedTime === 0 && !isPomoRunning) return;
             clearInterval(timerInterval); timerInterval = null; clearInterval(pomoInterval); pomoInterval = null;
+            display.classList.remove('running');
             
             const quarterHours = Math.max(1, Math.round((elapsedTime / 60000) / 15)) * 0.25;
             const record = {
@@ -212,7 +236,8 @@
             const { error } = await supabaseClient.from('workload_records').insert([record]);
             if (!error) { history.unshift(record); updateUI(); }
             
-            elapsedTime = 0; display.textContent = "00:00:00";
+            elapsedTime = 0; 
+            updateDisplay(0);
             isPomoRunning = false; pomoText.textContent = "启动番茄专注 (30m)";
             startBtn.classList.remove('hidden'); pauseBtn.classList.add('hidden');
         };
