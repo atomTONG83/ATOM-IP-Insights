@@ -206,9 +206,11 @@
         const historyList = document.getElementById('history-list');
         const historySearch = document.getElementById('historySearch');
 
+        let expandedDates = new Set();
+
         async function loadData() {
             try {
-                const { data, error } = await supabaseClient.from('workload_records').select('*').order('timestamp', { ascending: false }).limit(showAll ? 100 : 30);
+                const { data, error } = await supabaseClient.from('workload_records').select('*').order('timestamp', { ascending: false }).limit(showAll ? 200 : 30);
                 if (data) { history = data; updateUI(); }
             } catch (e) { console.error(e); }
         }
@@ -315,15 +317,21 @@
 
             sortedDates.forEach(date => {
                 const isToday = (date === today);
+                const isExpanded = isToday || expandedDates.has(date) || showAll;
                 const dayRecords = groups[date];
                 const dayTotal = dayRecords.reduce((sum, r) => sum + r.duration_hours, 0);
 
-                if (isToday || showAll) {
+                if (isExpanded) {
                     // Header for non-today dates when expanded
-                    if (!isToday && showAll) {
+                    if (!isToday) {
                         const dateHeader = document.createElement('div');
-                        dateHeader.className = "px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest flex justify-between";
-                        dateHeader.innerHTML = `<span>📅 ${date}</span> <span>${dayTotal.toFixed(2)}H</span>`;
+                        dateHeader.className = "px-4 py-2 text-[10px] font-black text-blue-500 uppercase tracking-widest flex justify-between items-center cursor-pointer hover:opacity-70";
+                        dateHeader.onclick = () => { 
+                            if (showAll) { showAll = false; expandedDates.clear(); }
+                            else { expandedDates.delete(date); }
+                            updateUI(); 
+                        };
+                        dateHeader.innerHTML = `<span>📅 ${date} (点击收起)</span> <span>${dayTotal.toFixed(2)}H <i class="fa-solid fa-chevron-up ml-1"></i></span>`;
                         historyList.appendChild(dateHeader);
                     }
 
@@ -351,7 +359,8 @@
                 } else {
                     // Collapsed Row
                     const summary = document.createElement('div');
-                    summary.className = "glass p-4 rounded-3xl flex justify-between items-center shadow-sm border border-dashed border-slate-300 dark:border-slate-700 opacity-80";
+                    summary.className = "glass p-4 rounded-3xl flex justify-between items-center shadow-sm border border-dashed border-slate-300 dark:border-slate-700 opacity-80 cursor-pointer active:scale-[0.98] transition-all";
+                    summary.onclick = () => { expandedDates.add(date); updateUI(); };
                     summary.innerHTML = `
                         <div class="flex flex-col">
                             <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">📅 ${date}</span>
@@ -359,15 +368,17 @@
                         </div>
                         <div class="flex items-center gap-4">
                             <span class="text-sm font-black text-blue-500">${dayTotal.toFixed(2)} H</span>
-                            <button onclick="showAll=true; updateUI();" class="text-xs font-black text-slate-400 underline uppercase tracking-tighter">展开</button>
+                            <span class="text-xs font-black text-slate-400 underline uppercase tracking-tighter">展开</span>
                         </div>
                     `;
                     historyList.appendChild(summary);
                 }
             });
 
-            if (!showAll && sortedDates.length > 1) {
+            const showAllBtn = document.getElementById('showAllBtn');
+            if (sortedDates.length > 1) {
                 document.getElementById('showAllContainer').classList.remove('hidden');
+                showAllBtn.textContent = showAll ? "收起所有历史记录" : "加载并展开所有历史记录";
             } else {
                 document.getElementById('showAllContainer').classList.add('hidden');
             }
@@ -473,7 +484,11 @@
         };
 
         setInterval(() => document.getElementById('live-clock').textContent = new Date().toLocaleString(), 1000);
-        document.getElementById('showAllBtn').onclick = () => { showAll = true; updateUI(); };
+        document.getElementById('showAllBtn').onclick = () => { 
+            showAll = !showAll; 
+            if (!showAll) expandedDates.clear();
+            updateUI(); 
+        };
         loadData();
     </script>
 </body>
