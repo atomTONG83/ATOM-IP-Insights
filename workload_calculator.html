@@ -2,273 +2,238 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Brain-Burn Meter 🔥</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain-Burn Meter 🔥 - Atom TONG</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@700&display=swap');
-        body { font-family: 'Inter', sans-serif; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
-        .timer-font { font-family: 'Inter', sans-serif; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; transition: all 0.3s; }
         
-        /* Clear Mode Distinction */
-        body.light { background-color: #f8fafc; color: #0f172a; }
-        .light .glass { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .light input { background-color: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
-        .light input::placeholder { color: #64748b; }
-        .light #display { 
-            color: #475569; /* Slightly deeper gray for better visibility */
-            text-shadow: none; 
-        }
-        .light .stats-card { background: #ffffff; border: 2px solid #cbd5e1; }
-        .light .stats-card span:first-child { color: #0f172a !important; font-weight: 900; } /* High contrast label */
-        .light .stats-card .text-3xl { color: #000000 !important; } /* Pure black stats value */
-        .light .text-dim { color: #1e293b; } /* High contrast secondary text */
-        .light .duration-val { color: #000000 !important; font-weight: 900; }
-        .light .record-card { border: 1px solid #cbd5e1; }
+        /* Light Mode (Default) */
+        body.light { background-color: #f1f5f9; color: #1e293b; }
+        .light .glass { background: rgba(255, 255, 255, 0.98); border: 1px solid #e2e8f0; }
+        .light .text-main { color: #0f172a; }
+        .light .text-dim { color: #64748b; }
+        .light .bg-sub { background-color: #f8fafc; }
+        
+        /* Dark Mode */
+        body.dark { background-color: #0f172a; color: #f1f5f9; }
+        .dark .glass { background: rgba(30, 41, 59, 0.95); border: 1px solid #334155; }
+        .dark .text-main { color: #f8fafc; }
+        .dark .text-dim { color: #94a3b8; }
+        .dark .bg-sub { background-color: #1e293b; }
+        .dark input { background-color: #1e293b !important; color: white; border-color: #334155 !important; }
+        .dark #display { color: #38bdf8; }
+        .dark .card:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
+        .dark thead { background-color: #1e293b !important; color: #94a3b8 !important; }
+        .dark tr:hover { background-color: #334155 !important; }
 
-        body.dark { background-color: #1c1c1e; color: #f8fafc; }
-        .dark .glass { background: rgba(44, 44, 46, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .dark input { background-color: #2c2c2e !important; color: #ffffff !important; border: 1px solid #3a3a3c !important; }
-        .dark #display { 
-            color: #cbd5e1; /* Brighter gray for dark mode */
-            text-shadow: 0 0 15px rgba(255,255,255,0.05); 
-        }
-        .dark .stats-card { background: #2c2c2e; border: 1px solid #3a3a3c; }
-        .dark .duration-val { color: #ffffff !important; }
-        
-        /* Tactical Stop Button Enhancement */
-        .btn-stop-tactical { background: #3f3f46; color: #fecaca; border: 1px solid #52525b; }
-        .dark .btn-stop-tactical { background: #450a0a; color: #fecaca; border: 1px solid #7f1d1d; }
-        
-        /* Mobile App Scaling */
-        @media (max-width: 640px) {
-            #display { font-size: 6rem !important; }
-            input { font-size: 1rem !important; padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
-            .btn-text { font-size: 0.85rem !important; }
-            .record-title { font-size: 1rem !important; }
-            .record-content { font-size: 0.85rem !important; }
-        }
-
-        .safe-bottom { padding-bottom: calc(30px + env(safe-area-inset-bottom)); }
-        .safe-top { padding-top: calc(12px + env(safe-area-inset-top)); }
-        @keyframes pulse-red { 0%, 100% { } 50% { background-color: rgba(239, 68, 68, 0.1); } }
+        .timer-glow { text-shadow: 0 0 10px rgba(59, 130, 246, 0.2); }
+        .card { transition: all 0.2s; }
+        @keyframes pulse-red { 0%, 100% { } 50% { background-color: rgba(239, 68, 68, 0.2); } }
         .pomodoro-end { animation: pulse-red 1s infinite; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        
-        /* Blinking Colon when running */
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
-        .running .colon { animation: blink 1s infinite; }
+        @keyframes confetti { 0% { transform: translateY(0) rotate(0); opacity: 1; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+        .confetti { position: fixed; width: 10px; height: 10px; z-index: 1000; pointer-events: none; animation: confetti 3s ease-out forwards; }
     </style>
 </head>
-<body class="light bg-slate-50 dark:bg-slate-900 min-h-screen flex flex-col no-scrollbar">
+<body class="p-4 flex flex-col items-center light">
+    <div class="w-full max-w-2xl">
+        <!-- Compact Header -->
+        <header class="flex justify-between items-end mb-4 px-2">
+            <div>
+                <h1 class="text-xl font-bold text-main flex items-center gap-2">
+                    <i class="fa-solid fa-fire-flame-curved text-orange-500"></i>
+                    脑力计费器 <span class="text-sm font-light opacity-50">Brain-Burn Meter</span>
+                </h1>
+                <p class="text-[10px] text-dim uppercase tracking-widest font-bold">Atom TONG Tactical Edition</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="themeToggle" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+                <div id="live-clock" class="text-xs font-mono text-dim"></div>
+            </div>
+        </header>
 
-    <!-- Top Navigation Bar -->
-    <nav class="safe-top sticky top-0 z-50 flex justify-between items-center px-6 glass shadow-sm">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/30">
-                <i class="fa-solid fa-fire-flame-curved text-white text-sm"></i>
+        <!-- Main Controller -->
+        <div class="glass p-5 rounded-2xl shadow-sm mb-4">
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <input type="text" id="case-number" placeholder="案号" class="px-3 py-2 text-sm rounded-lg border border-slate-200 focus:ring-1 focus:ring-blue-500 outline-none bg-slate-50/50">
+                <input type="text" id="work-content" placeholder="工作内容" class="px-3 py-2 text-sm rounded-lg border border-slate-200 focus:ring-1 focus:ring-blue-500 outline-none bg-slate-50/50">
             </div>
-            <span class="font-bold text-slate-900 dark:text-white tracking-tight">Brain-Burn</span>
-        </div>
-        <div class="flex items-center gap-4">
-            <button id="themeToggle" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 transition-all">
-                <i id="themeIcon" class="fa-solid fa-moon"></i>
-            </button>
-            <a href="index.html" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-                <i class="fa-solid fa-house"></i>
-            </a>
-        </div>
-    </nav>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 p-5 max-w-lg mx-auto w-full space-y-6">
-        
-        <!-- Timer Section (Hero) -->
-        <section class="relative pt-12 pb-4 flex flex-col items-center justify-center px-6">
-            <div id="live-clock" class="absolute top-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-[0.3em] uppercase">2026-02-25 02:22:00</div>
-            
-            <div id="display" class="timer-font text-[6.5rem] font-black leading-none transition-all tracking-tight flex items-center">
-                <span>00</span><span class="mx-0.5">:</span><span>00</span><span class="mx-0.5">:</span><span class="text-[0.45em] self-end mb-[0.15em] opacity-60 ml-2">00</span>
-            </div>
-            
-            <div class="mt-4 flex items-center gap-2 px-4 py-1.5 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                <i class="fa-solid fa-fire animate-pulse text-orange-500"></i>
-                Atom TONG Tactical
-            </div>
-        </section>
-
-        <!-- Input Section -->
-        <section class="space-y-3 px-2">
-            <div class="relative">
-                <i class="fa-solid fa-folder-open absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                <input type="text" id="case-number" placeholder="案件编号 (Case #)" class="w-full pl-12 pr-4 py-3.5 rounded-2xl border-none ring-1 ring-slate-200 dark:ring-slate-800 bg-slate-50 dark:bg-slate-800 text-base font-bold outline-none transition-all focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div class="relative">
-                <i class="fa-solid fa-pen-nib absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                <input type="text" id="work-content" placeholder="工作内容描述..." class="w-full pl-12 pr-4 py-3.5 rounded-2xl border-none ring-1 ring-slate-200 dark:ring-slate-800 bg-slate-50 dark:bg-slate-800 text-base font-bold outline-none transition-all focus:ring-2 focus:ring-blue-500">
-            </div>
-        </section>
-
-        <!-- Action Grid -->
-        <section class="grid grid-cols-2 gap-4">
-            <button id="startBtn" class="flex flex-col items-center justify-center gap-3 bg-blue-600 text-white py-6 rounded-[2rem] font-bold shadow-2xl shadow-blue-600/30 active:scale-90 transition-all">
-                <i class="fa-solid fa-play text-2xl"></i>
-                <span class="text-sm uppercase tracking-wider btn-text">开始计时</span>
-            </button>
-            <button id="pauseBtn" class="hidden flex flex-col items-center justify-center gap-3 bg-orange-500 text-white py-6 rounded-[2rem] font-bold shadow-2xl shadow-orange-500/30 active:scale-90 transition-all">
-                <i class="fa-solid fa-pause text-2xl"></i>
-                <span class="text-sm uppercase tracking-wider btn-text">暂时停止</span>
-            </button>
-            <button id="stopBtn" class="flex flex-col items-center justify-center gap-3 btn-stop-tactical py-6 rounded-[2rem] font-bold shadow-xl active:scale-90 transition-all">
-                <i class="fa-solid fa-square text-2xl text-red-500"></i>
-                <span class="text-sm uppercase tracking-wider btn-text">停止保存</span>
-            </button>
-            <button id="pomodoroBtn" class="col-span-2 flex items-center justify-center gap-4 bg-indigo-600 text-white py-5 rounded-3xl font-bold shadow-lg shadow-indigo-600/20 active:scale-95 transition-all">
-                <i class="fa-solid fa-clock text-xl"></i>
-                <span id="pomo-text" class="text-base font-bold uppercase tracking-widest">开启番茄专注 (30m)</span>
-            </button>
-        </section>
-
-        <!-- Dynamic Stats Widgets -->
-        <section class="grid grid-cols-2 gap-4">
-            <div class="glass p-5 rounded-[2rem] flex flex-col items-start gap-1 shadow-sm stats-card">
-                <span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">本周工时</span>
-                <div class="flex items-baseline gap-1">
-                    <span id="weekly-total" class="text-3xl font-black text-slate-900 dark:text-white">0.0</span>
-                    <span class="text-xs text-slate-400 font-bold">H</span>
-                </div>
-            </div>
-            <div class="glass p-5 rounded-[2rem] flex flex-col items-start gap-1 shadow-sm stats-card">
-                <span class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">本月总计</span>
-                <div class="flex items-baseline gap-1">
-                    <span id="monthly-total" class="text-3xl font-black text-slate-900 dark:text-white">0.0</span>
-                    <span class="text-xs text-slate-400 font-bold">H</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Mobile-first Records List -->
-        <section class="space-y-5 pb-24">
-            <div class="flex justify-between items-center px-2">
-                <h2 class="text-lg font-black text-slate-900 dark:text-white tracking-tight">最近记录</h2>
-                <div class="flex items-center gap-2">
-                    <button id="syncCloudBtn" class="px-3 py-2 bg-indigo-600 text-white text-xs font-bold rounded-full shadow-md hover:bg-indigo-700 transition-all flex items-center gap-1">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                        同步云端
+            <div class="flex flex-col items-center">
+                <div id="display" class="text-5xl font-mono font-bold text-main timer-glow mb-5">00:00:00</div>
+                
+                <div class="flex flex-wrap justify-center gap-2 w-full">
+                    <button id="startBtn" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-bold hover:bg-blue-700 active:scale-95 transition-all text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-play"></i> 开始
                     </button>
-                    <button id="exportCsvBtn" class="px-3 py-2 bg-emerald-600 text-white text-xs font-bold rounded-full shadow-md hover:bg-emerald-700 transition-all flex items-center gap-1">
-                        <i class="fa-solid fa-file-csv"></i>
-                        导出CSV
+                    <button id="pauseBtn" class="flex-1 bg-amber-500 text-white py-2.5 rounded-xl font-bold hover:bg-amber-600 active:scale-95 transition-all text-sm flex items-center justify-center gap-2 hidden">
+                        <i class="fa-solid fa-pause"></i> 暂停
                     </button>
-                    <div class="relative">
-                        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="text" id="historySearch" placeholder="搜索..." class="pl-9 pr-4 py-2 bg-slate-200/50 dark:bg-slate-800 text-sm rounded-full outline-none focus:ring-2 focus:ring-blue-500 w-32 font-bold transition-all">
-                    </div>
+                    <button id="stopBtn" class="flex-1 bg-red-500 text-white py-2.5 rounded-xl font-bold hover:bg-red-600 active:scale-95 transition-all text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-square"></i> 停止并保存
+                    </button>
+                    <button id="pomodoroBtn" class="flex-1 bg-indigo-50 text-indigo-600 py-2.5 rounded-xl font-bold border border-indigo-100 hover:bg-indigo-100 active:scale-95 transition-all text-sm flex items-center justify-center gap-2 min-w-[120px]">
+                        <i class="fa-solid fa-apple-whole"></i> <span id="pomo-text">番茄钟 (30m)</span>
+                    </button>
+                    <button id="reset" class="px-4 bg-slate-100 text-slate-500 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-200">
+                        重置
+                    </button>
                 </div>
             </div>
-            
-            <div id="history-list" class="space-y-3"></div>
-            <div id="showAllContainer" class="hidden">
-                <button id="showAllBtn" class="w-full py-4 text-sm font-black text-slate-400 dark:text-slate-500 bg-slate-100/50 dark:bg-slate-800/30 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800">加载更早的历史记录</button>
-            </div>
-        </section>
-    </main>
+        </div>
 
-    <!-- Footer Copyright -->
-    <footer class="text-center py-6 text-[10px] text-slate-400 safe-bottom">
-        &copy; 2026 ATOM TONG 版权所有 · PI POWERED
-    </footer>
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="glass p-3 rounded-xl card flex justify-between items-center">
+                <span class="text-[10px] font-bold text-dim uppercase">本周</span>
+                <span id="weekly-total" class="font-bold text-main text-sm">0.0 h</span>
+            </div>
+            <div class="glass p-3 rounded-xl card flex justify-between items-center">
+                <span class="text-[10px] font-bold text-dim uppercase">本月</span>
+                <span id="monthly-total" class="font-bold text-main text-sm">0.0 h</span>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="glass rounded-2xl shadow-sm overflow-hidden mb-8">
+            <div class="px-4 py-3 border-b border-slate-50 flex justify-between items-center bg-sub">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-sm font-bold text-main">最近记录</h2>
+                    <input type="text" id="historySearch" placeholder="搜索案号或内容..." class="px-3 py-1 text-[10px] rounded-full border border-slate-200 outline-none focus:ring-1 focus:ring-blue-500 bg-white/50 w-40">
+                </div>
+                <div class="flex gap-3" id="admin-tools" style="display: none;">
+                    <button id="cloudSyncBtn" class="text-[10px] font-bold text-orange-500 hover:text-orange-600 flex items-center gap-1">
+                        <i class="fa-solid fa-cloud-arrow-down"></i> 同步云端
+                    </button>
+                    <button onclick="exportCSV()" class="text-[10px] font-bold text-blue-500 hover:underline">导出 CSV</button>
+                </div>
+            </div>
+            <div class="max-h-60 overflow-y-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="sticky top-0 bg-white shadow-sm">
+                        <tr class="text-slate-400 font-bold uppercase">
+                            <th class="px-4 py-2">日期</th>
+                            <th class="px-4 py-2">案号</th>
+                            <th class="px-4 py-2">内容</th>
+                            <th class="px-4 py-2 text-right">工时</th>
+                            <th class="px-4 py-2 text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body" class="divide-y divide-slate-50"></tbody>
+                </table>
+            </div>
+            <div id="showAllContainer" class="px-4 py-2 text-center bg-slate-50/50 border-t border-slate-50 hidden">
+                <button id="showAllBtn" class="text-[10px] font-bold text-slate-400 hover:text-blue-500 transition-colors">显示全部记录 (展开历史)</button>
+            </div>
+        </div>
+
+        <footer class="text-center text-[10px] text-slate-400 font-medium">
+            &copy; 2026 Atom TONG 版权所有
+        </footer>
+    </div>
 
     <script>
-        const SUPABASE_URL = 'https://ghbmmnapyupusmyxjkvv.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_MkMhoECq7wo5qFi3K9Shcg_7LiPM1oU';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
         let startTime, elapsedTime = 0, timerInterval;
         let pomoInterval, pomoRemaining = 0, isPomoRunning = false;
         let history = [];
         let showAll = false;
 
         const display = document.getElementById('display');
+        const pomoText = document.getElementById('pomo-text');
+        const pomoBtn = document.getElementById('pomodoroBtn');
         const startBtn = document.getElementById('startBtn');
         const pauseBtn = document.getElementById('pauseBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const pomoBtn = document.getElementById('pomodoroBtn');
-        const pomoText = document.getElementById('pomo-text');
-        const historyList = document.getElementById('history-list');
-        const historySearch = document.getElementById('historySearch');
+        const historyBody = document.getElementById('history-body');
 
         async function loadData() {
             try {
-                const { data, error } = await supabaseClient.from('workload_records').select('*').order('timestamp', { ascending: false }).limit(showAll ? 100 : 15);
-                if (data) { history = data; updateUI(); }
-            } catch (e) { console.error(e); }
+                // Cache-busting for Chrome
+                const cacheBuster = '?_=' + Date.now();
+                const res = await fetch('/memory/workload_data.json' + cacheBuster);
+                if (res.ok) { 
+                    history = await res.json(); 
+                    // Also fetch deleted IDs and filter them out
+                    try {
+                        const delRes = await fetch('/memory/deleted_workload_ids.json' + cacheBuster);
+                        if (delRes.ok) {
+                            const deletedIds = await delRes.json();
+                            history = history.filter(r => !deletedIds.includes(r.timestamp));
+                        }
+                    } catch (e) {}
+                    updateUI(); 
+                }
+            } catch (e) {}
         }
 
         function formatTime(ms) {
-            let h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000), s = Math.floor((ms%60000)/1000);
+            let h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000), s = Math.floor((ms % 60000) / 1000);
             return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }
-
-        function updateDisplay(ms) {
-            let h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000), s = Math.floor((ms%60000)/1000);
-            display.innerHTML = `<span>${h.toString().padStart(2,'0')}</span><span class="mx-0.5">:</span><span>${m.toString().padStart(2,'0')}</span><span class="mx-0.5">:</span><span class="text-[0.45em] self-end mb-[0.15em] opacity-60 ml-2">${s.toString().padStart(2,'0')}</span>`;
         }
 
         startBtn.onclick = () => {
             if (timerInterval) return;
             startTime = Date.now() - elapsedTime;
-            timerInterval = setInterval(() => { 
-                elapsedTime = Date.now() - startTime; 
-                updateDisplay(elapsedTime); 
+            timerInterval = setInterval(() => {
+                elapsedTime = Date.now() - startTime;
+                display.textContent = formatTime(elapsedTime);
             }, 100);
-            startBtn.classList.add('hidden'); pauseBtn.classList.remove('hidden');
+            startBtn.classList.add('hidden');
+            pauseBtn.classList.remove('hidden');
             if (isPomoRunning && !pomoInterval) startPomoTicker();
         };
 
-        pauseBtn.onclick = () => { 
-            clearInterval(timerInterval); 
-            timerInterval = null; 
-            clearInterval(pomoInterval); 
-            pomoInterval = null; 
-            startBtn.classList.remove('hidden'); 
-            pauseBtn.classList.add('hidden'); 
+        pauseBtn.onclick = () => {
+            clearInterval(timerInterval); timerInterval = null;
+            clearInterval(pomoInterval); pomoInterval = null;
+            startBtn.classList.remove('hidden');
+            pauseBtn.classList.add('hidden');
         };
 
-        stopBtn.onclick = async () => {
+        document.getElementById('stopBtn').onclick = async () => {
             if (elapsedTime === 0 && !isPomoRunning) return;
-            clearInterval(timerInterval); timerInterval = null; clearInterval(pomoInterval); pomoInterval = null;
+            clearInterval(timerInterval); timerInterval = null;
+            clearInterval(pomoInterval); pomoInterval = null;
+            isPomoRunning = false;
+            pomoText.textContent = "番茄钟 (30m)";
+            startBtn.classList.remove('hidden');
+            pauseBtn.classList.add('hidden');
             
+            const caseNum = document.getElementById('case-number').value || "无案号";
+            const content = document.getElementById('work-content').value || "常规工作";
             const quarterHours = Math.max(1, Math.round((elapsedTime / 60000) / 15)) * 0.25;
+
             const record = {
-                timestamp: Date.now(),
                 date: new Date().toISOString().split('T')[0],
-                case_number: document.getElementById('case-number').value || "MOBILE",
-                content: (isPomoRunning ? "[番茄] " : "") + (document.getElementById('work-content').value || "未定义任务"),
-                duration_hours: quarterHours
+                timestamp: Date.now(),
+                case_number: caseNum,
+                content: content,
+                duration_hours: quarterHours,
+                duration_formatted: quarterHours.toFixed(2) + " h"
             };
 
-            const { error } = await supabaseClient.from('workload_records').insert([record]);
-            if (!error) { 
-                history.unshift(record); 
-                document.getElementById('case-number').value = "";
-                document.getElementById('work-content').value = "";
-                updateUI(); 
-            }
-            
+            await fetch('/save_workload', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(record) });
+            history.push(record);
             elapsedTime = 0; 
-            updateDisplay(0);
-            isPomoRunning = false; pomoText.textContent = "启动番茄专注 (30m)";
-            startBtn.classList.remove('hidden'); pauseBtn.classList.add('hidden');
+            display.textContent = "00:00:00";
+            document.getElementById('case-number').value = "";
+            document.getElementById('work-content').value = "";
+            updateUI();
         };
 
         pomoBtn.onclick = () => {
-            if (isPomoRunning) { clearInterval(pomoInterval); pomoInterval = null; isPomoRunning = false; pomoText.textContent = "启动番茄专注 (30m)"; return; }
-            pomoRemaining = 30 * 60; isPomoRunning = true; startPomoTicker(); startBtn.onclick();
+            if (isPomoRunning) { 
+                clearInterval(pomoInterval); pomoInterval = null; 
+                isPomoRunning = false; pomoText.textContent = "番茄钟 (30m)"; 
+                return; 
+            }
+            pomoRemaining = 30 * 60;
+            isPomoRunning = true;
+            startPomoTicker();
+            startBtn.click();
         };
 
         function startPomoTicker() {
@@ -276,120 +241,196 @@
             pomoInterval = setInterval(() => {
                 pomoRemaining--;
                 let m = Math.floor(pomoRemaining / 60), s = pomoRemaining % 60;
-                pomoText.textContent = `专注中: ${m}:${s.toString().padStart(2,'0')}`;
+                pomoText.textContent = `${m}:${s.toString().padStart(2,'0')}`;
                 if (pomoRemaining <= 0) {
-                    clearInterval(pomoInterval); pomoInterval = null; isPomoRunning = false;
-                    pomoText.textContent = "专注完成! 🍎";
-                    document.body.classList.add('pomodoro-end');
-                    setTimeout(() => document.body.classList.remove('pomodoro-end'), 5000);
+                    clearInterval(pomoInterval); pomoInterval = null;
+                    isPomoRunning = false;
+                    pomoText.textContent = "DONE! 🍎";
+                    triggerEndEffect();
                 }
             }, 1000);
         }
 
+        document.getElementById('reset').onclick = () => {
+            clearInterval(timerInterval); timerInterval = null;
+            clearInterval(pomoInterval); pomoInterval = null;
+            isPomoRunning = false;
+            elapsedTime = 0; display.textContent = "00:00:00";
+            pomoText.textContent = "番茄钟 (30m)";
+            startBtn.classList.remove('hidden');
+            pauseBtn.classList.add('hidden');
+        };
+
         function updateUI() {
-            historyList.innerHTML = '';
-            const searchTerm = historySearch.value.toLowerCase();
+            historyBody.innerHTML = '';
+            const searchTerm = document.getElementById('historySearch').value.toLowerCase();
+            const today = new Date().toISOString().split('T')[0];
             let week = 0, month = 0, now = new Date();
             let startW = new Date(now.setDate(now.getDate() - now.getDay())).toISOString().split('T')[0];
             let startM = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
 
-            history.filter(r => (r.case_number||"").toLowerCase().includes(searchTerm)).forEach(r => {
-                const item = document.createElement('div');
-                item.className = "glass p-5 rounded-[2rem] flex justify-between items-center shadow-sm record-card";
-                item.innerHTML = `
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[9px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-wider">${r.date}</span>
-                        <span class="text-base font-black text-blue-700 dark:text-blue-400 record-title">${r.case_number}</span>
-                        <span class="text-xs text-slate-700 dark:text-slate-400 font-medium record-content line-clamp-1">${r.content || ''}</span>
-                    </div>
-                    <div class="flex items-center gap-5">
-                        <div class="text-right">
-                            <span class="text-lg font-black text-slate-900 dark:text-white duration-val">${r.duration_hours.toFixed(2)}</span>
-                            <span class="text-[9px] font-black text-slate-500 dark:text-slate-400">H</span>
-                        </div>
-                        <button onclick="delRec(${r.timestamp})" class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-red-500 transition-colors">
-                            <i class="fa-solid fa-trash-can text-xs"></i>
-                        </button>
-                    </div>
-                `;
-                historyList.appendChild(item);
+            let filtered = history.filter(r => 
+                (r.case_number || "").toLowerCase().includes(searchTerm) || 
+                (r.content || "").toLowerCase().includes(searchTerm)
+            ).reverse();
+
+            // 按日期分组
+            const groups = {};
+            filtered.forEach(r => {
+                if (!groups[r.date]) groups[r.date] = [];
+                groups[r.date].push(r);
+            });
+
+            const sortedDates = Object.keys(groups).sort().reverse();
+
+            sortedDates.forEach(date => {
+                const isToday = (date === today);
+                const dayRecords = groups[date];
+                const dayTotal = dayRecords.reduce((sum, r) => sum + r.duration_hours, 0);
+
+                if (isToday || showAll) {
+                    // 渲染日期标题行（仅在非今日或showAll模式下显示标题，今日记录直接显示明细）
+                    if (!isToday) {
+                        const headerTr = document.createElement('tr');
+                        headerTr.className = "bg-slate-50/80 font-bold dark:bg-slate-800/50";
+                        headerTr.innerHTML = `
+                            <td colspan="5" class="px-4 py-2 text-main flex justify-between items-center cursor-pointer" onclick="this.parentElement.nextElementSibling.classList.toggle('hidden')">
+                                <span>📅 ${date}</span>
+                                <span class="text-[10px] text-blue-500">当日总计: ${dayTotal.toFixed(2)} h</span>
+                            </td>
+                        `;
+                        // historyBody.appendChild(headerTr); // 这种逻辑略复杂，改用更直接的渲染
+                    }
+
+                    dayRecords.forEach(r => {
+                        const tr = document.createElement('tr');
+                        if (isToday) tr.className = "bg-blue-50/30 dark:bg-blue-900/10";
+                        tr.innerHTML = `
+                            <td class="px-4 py-2 text-dim font-medium">${isToday ? '<span class="text-blue-500">今日</span>' : r.date}</td>
+                            <td class="px-4 py-2 font-bold text-blue-500">${r.case_number}</td>
+                            <td class="px-4 py-2 text-dim truncate max-w-[150px]">${r.content}</td>
+                            <td class="px-4 py-2 text-right font-mono font-bold text-main">${r.duration_hours.toFixed(2)}</td>
+                            <td class="px-4 py-2 text-center">
+                                <button onclick="editRec(${r.timestamp})" class="text-slate-300 hover:text-blue-500 mr-2"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="delRec(${r.timestamp})" class="text-slate-300 hover:text-red-500"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        `;
+                        historyBody.appendChild(tr);
+                    });
+                } else {
+                    // 渲染折叠行（历史记录聚合）
+                    const summaryTr = document.createElement('tr');
+                    summaryTr.className = "hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors";
+                    summaryTr.innerHTML = `
+                        <td class="px-4 py-3 text-dim font-bold">📅 ${date}</td>
+                        <td colspan="2" class="px-4 py-3 text-[10px] text-slate-400 italic">共 ${dayRecords.length} 项工作记录</td>
+                        <td class="px-4 py-3 text-right font-mono font-bold text-blue-500">${dayTotal.toFixed(2)} h</td>
+                        <td class="px-4 py-3 text-center">
+                            <button onclick="showAll=true; updateUI();" class="text-blue-400 hover:text-blue-600 text-[10px] font-bold">展开详情</button>
+                        </td>
+                    `;
+                    historyBody.appendChild(summaryTr);
+                }
+            });
+
+            if (!showAll && sortedDates.length > 1) {
+                document.getElementById('showAllContainer').classList.remove('hidden');
+            } else {
+                document.getElementById('showAllContainer').classList.add('hidden');
+            }
+
+            // Always calculate stats based on FULL history
+            history.forEach(r => {
                 if (r.date >= startW) week += r.duration_hours;
                 if (r.date >= startM) month += r.duration_hours;
             });
-            document.getElementById('weekly-total').textContent = week.toFixed(1);
-            document.getElementById('monthly-total').textContent = month.toFixed(1);
+            
+            document.getElementById('weekly-total').textContent = week.toFixed(1) + ' h';
+            document.getElementById('monthly-total').textContent = month.toFixed(1) + ' h';
         }
 
-        window.delRec = async (ts) => {
-            if (!confirm("删除记录?")) return;
-            const { error } = await supabaseClient.from('workload_records').delete().eq('timestamp', ts);
-            if (!error) { history = history.filter(i => i.timestamp !== ts); updateUI(); }
-        };
+        document.getElementById('historySearch').oninput = () => updateUI();
+        document.getElementById('showAllBtn').onclick = () => { showAll = true; updateUI(); };
 
-        const themeBtn = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
-        themeBtn.onclick = () => {
-            const isDark = document.body.classList.contains('dark');
-            document.body.classList.toggle('dark', !isDark);
-            document.body.classList.toggle('light', isDark);
-            themeIcon.className = isDark ? 'fa-solid fa-moon text-slate-400' : 'fa-solid fa-sun text-yellow-400';
-            localStorage.setItem('web_theme', !isDark ? 'dark' : 'light');
-        };
-        if (localStorage.getItem('web_theme') === 'dark') themeBtn.onclick();
-
-        historySearch.oninput = () => updateUI();
-
-        // 同步云端功能
-        document.getElementById('syncCloudBtn').onclick = async () => {
-            const btn = document.getElementById('syncCloudBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 同步中...';
-            btn.disabled = true;
-            
-            try {
-                const response = await fetch('http://192.168.32.70:8888/sync_cloud_workload', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const result = await response.json();
-                
-                if (result.status === 'sync_complete') {
-                    alert('✅ 同步成功！');
-                    await loadData(); // 重新加载数据
-                } else {
-                    alert('⚠️ 同步结果：' + (result.output || '未知'));
-                }
-            } catch (e) {
-                alert('❌ 同步失败：' + e.message);
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+        window.editRec = async (ts) => {
+            const r = history.find(i => i.timestamp === ts);
+            const nCase = prompt("案号:", r.case_number), nCont = prompt("内容:", r.content), nTime = prompt("用时 (小时, 0.25 的倍数):", r.duration_hours);
+            if (nCase && nCont && nTime) {
+                const res = await fetch('/update_workload', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({timestamp:ts, case_number:nCase, content:nCont, duration_hours:nTime})});
+                if (res.ok) { r.case_number = nCase; r.content = nCont; r.duration_hours = parseFloat(nTime); updateUI(); }
             }
         };
 
-        // 导出CSV功能
-        document.getElementById('exportCsvBtn').onclick = () => {
+        window.delRec = async (ts) => {
+            if (confirm("删除?")) {
+                const res = await fetch('/delete_workload', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({timestamp:ts})});
+                if (res.ok) { history = history.filter(i => i.timestamp !== ts); updateUI(); }
+            }
+        };
+
+        setInterval(() => document.getElementById('live-clock').textContent = new Date().toLocaleString(), 1000);
+
+        // Theme Toggle Logic
+        const themeBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const cloudSyncBtn = document.getElementById('cloudSyncBtn');
+
+        cloudSyncBtn.onclick = async () => {
+            cloudSyncBtn.disabled = true;
+            cloudSyncBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> 同步中...';
+            try {
+                const res = await fetch('/sync_cloud_workload', { method: 'POST' });
+                if (res.ok) {
+                    const data = await res.json();
+                    alert("同步完成！已从云端拉取最新记录。");
+                    loadData(); // Reload history
+                } else {
+                    alert("同步失败，请检查后端日志。");
+                }
+            } catch (e) {
+                alert("同步请求出错: " + e.message);
+            } finally {
+                cloudSyncBtn.disabled = false;
+                cloudSyncBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> 同步云端';
+            }
+        };
+        
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.replace('light', 'dark');
+                themeIcon.className = 'fa-solid fa-sun text-yellow-400';
+            } else {
+                document.body.classList.replace('dark', 'light');
+                themeIcon.className = 'fa-solid fa-moon text-slate-400';
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        themeBtn.onclick = () => {
+            const current = document.body.classList.contains('dark') ? 'light' : 'dark';
+            setTheme(current);
+        };
+
+        // Export CSV Function
+        window.exportCSV = () => {
             if (history.length === 0) {
-                alert('没有记录可导出');
+                alert("没有记录可导出");
                 return;
             }
             
-            // CSV 表头
-            let csv = '\uFEFF日期,案件编号,工作内容,工时(小时)\n';
+            // CSV Header
+            let csv = '\uFEFF日期,时间戳,案号,工作内容,工时(小时)\n';
             
-            // 过滤后的数据（与当前显示一致）
-            const searchTerm = historySearch.value.toLowerCase();
-            const filteredHistory = history.filter(r => (r.case_number || "").toLowerCase().includes(searchTerm));
-            
-            filteredHistory.forEach(r => {
+            // Add data rows
+            history.forEach(r => {
                 const date = r.date || new Date(r.timestamp).toISOString().split('T')[0];
                 const caseNum = (r.case_number || '').replace(/,/g, ';');
                 const content = (r.content || '').replace(/,/g, ';').replace(/\n/g, ' ');
                 const hours = r.duration_hours ? r.duration_hours.toFixed(2) : '0.00';
-                csv += `${date},${caseNum},${content},${hours}\n`;
+                csv += `${date},${r.timestamp},"${caseNum}","${content}",${hours}\n`;
             });
             
-            // 创建下载链接
+            // Create download link
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const timestamp = new Date().toISOString().split('T')[0];
@@ -399,10 +440,22 @@
             link.click();
             document.body.removeChild(link);
             
-            alert(`✅ 已导出 ${filteredHistory.length} 条记录`);
+            alert(`已导出 ${history.length} 条记录到 CSV`);
         };
 
-        setInterval(() => document.getElementById('live-clock').textContent = new Date().toLocaleString(), 1000);
+        // Init theme
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        setTheme(savedTheme);
+
+        // 环境检测与工具显示逻辑
+        const isLocal = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1' || 
+                        window.location.hostname === '192.168.32.70';
+        
+        if (isLocal) {
+            document.getElementById('admin-tools').style.display = 'flex';
+        }
+
         loadData();
     </script>
 </body>
